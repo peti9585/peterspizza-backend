@@ -1,0 +1,67 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "PetersPizza.Api.Infrastructure.Interfaces/1.0.0": {
+        "dependencies": {
+          "PetersPizza.Api.Infrastructure.DataAccessObjects": "1.0.0",
+          "PetersPizza.Api.Models": "1.0.0",
+          "PetersPizza.Api.ViewModels": "1.0.0"
+        },
+        "runtime": {
+          "PetersPizza.Api.Infrastructure.Interfaces.dll": {}
+        }
+      },
+      "PetersPizza.Api.Infrastructure.DataAccessObjects/1.0.0": {
+        "runtime": {
+          "PetersPizza.Api.Infrastructure.DataAccessObjects.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "PetersPizza.Api.Models/1.0.0": {
+        "runtime": {
+          "PetersPizza.Api.Models.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "PetersPizza.Api.ViewModels/1.0.0": {
+        "runtime": {
+          "PetersPizza.Api.ViewModels.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "PetersPizza.Api.Infrastructure.Interfaces/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "PetersPizza.Api.Infrastructure.DataAccessObjects/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "PetersPizza.Api.Models/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "PetersPizza.Api.ViewModels/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

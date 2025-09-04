@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../buildMultiTargeting/PetersPizza.Api.Service.props" />
+</Project>

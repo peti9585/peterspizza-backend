@@ -1,0 +1,11 @@
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Infrastructure.DataAccessObjects/bin/Debug/net9.0/PetersPizza.Api.Infrastructure.DataAccessObjects.deps.json
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Infrastructure.DataAccessObjects/bin/Debug/net9.0/PetersPizza.Api.Infrastructure.DataAccessObjects.dll
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Infrastructure.DataAccessObjects/bin/Debug/net9.0/PetersPizza.Api.Infrastructure.DataAccessObjects.pdb
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Infrastructure.DataAccessObjects/obj/Debug/net9.0/PetersPizza.Api.Infrastructure.DataAccessObjects.GeneratedMSBuildEditorConfig.editorconfig
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Infrastructure.DataAccessObjects/obj/Debug/net9.0/PetersPizza.Api.Infrastructure.DataAccessObjects.AssemblyInfoInputs.cache
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Infrastructure.DataAccessObjects/obj/Debug/net9.0/PetersPizza.Api.Infrastructure.DataAccessObjects.AssemblyInfo.cs
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Infrastructure.DataAccessObjects/obj/Debug/net9.0/PetersPizza.Api.Infrastructure.DataAccessObjects.csproj.CoreCompileInputs.cache
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Infrastructure.DataAccessObjects/obj/Debug/net9.0/PetersPizza.Api.Infrastructure.DataAccessObjects.dll
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Infrastructure.DataAccessObjects/obj/Debug/net9.0/refint/PetersPizza.Api.Infrastructure.DataAccessObjects.dll
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Infrastructure.DataAccessObjects/obj/Debug/net9.0/PetersPizza.Api.Infrastructure.DataAccessObjects.pdb
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Infrastructure.DataAccessObjects/obj/Debug/net9.0/ref/PetersPizza.Api.Infrastructure.DataAccessObjects.dll

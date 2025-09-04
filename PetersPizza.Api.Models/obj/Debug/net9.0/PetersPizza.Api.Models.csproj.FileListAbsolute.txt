@@ -1,0 +1,11 @@
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Models/bin/Debug/net9.0/PetersPizza.Api.Models.deps.json
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Models/bin/Debug/net9.0/PetersPizza.Api.Models.dll
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Models/bin/Debug/net9.0/PetersPizza.Api.Models.pdb
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Models/obj/Debug/net9.0/PetersPizza.Api.Models.GeneratedMSBuildEditorConfig.editorconfig
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Models/obj/Debug/net9.0/PetersPizza.Api.Models.AssemblyInfoInputs.cache
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Models/obj/Debug/net9.0/PetersPizza.Api.Models.AssemblyInfo.cs
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Models/obj/Debug/net9.0/PetersPizza.Api.Models.csproj.CoreCompileInputs.cache
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Models/obj/Debug/net9.0/PetersPizza.Api.Models.dll
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Models/obj/Debug/net9.0/refint/PetersPizza.Api.Models.dll
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Models/obj/Debug/net9.0/PetersPizza.Api.Models.pdb
+/Users/peti/RiderProjects/PetersPizza-backend/PetersPizza.Api.Models/obj/Debug/net9.0/ref/PetersPizza.Api.Models.dll

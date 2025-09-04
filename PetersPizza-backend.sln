@@ -1,0 +1,82 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetersPizza.Api.Service", "PetersPizza.Api.Service\PetersPizza.Api.Service.csproj", "{61580737-1EA7-410C-8EA5-EF8C6F265699}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetersPizza.Api.Infrastructure.API.Host", "PetersPizza.Api.Infrastructure.API.Host\PetersPizza.Api.Infrastructure.API.Host.csproj", "{8FCCE0A1-C4AD-4EF1-A025-EB4871232623}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{8AC446BF-6377-4809-B343-7C7BF50F8A01}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hosts", "Hosts", "{47ADAF4F-D2A6-4AEF-A8FF-64E96A724988}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetersPizza.Api.Infrastructure.Repositories", "PetersPizza.Api.Infrastructure.Repositories\PetersPizza.Api.Infrastructure.Repositories.csproj", "{5F95D869-6BDC-4F17-B478-09A3D36A9E6F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetersPizza.Api.Infrastructure.DataAccessObjects", "PetersPizza.Api.Infrastructure.DataAccessObjects\PetersPizza.Api.Infrastructure.DataAccessObjects.csproj", "{2EBBC735-2294-4C4C-B982-0CAC7A9005CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetersPizza.Api.Infrastructure.Interfaces", "PetersPizza.Api.Infrastructure.Interfaces\PetersPizza.Api.Infrastructure.Interfaces.csproj", "{D2E2070D-0986-468D-BC47-8814C0528F13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetersPizza.Api.Models", "PetersPizza.Api.Models\PetersPizza.Api.Models.csproj", "{9447DB76-E1B5-4A23-9F8D-1B2DB058ED4E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetersPizza.Api.Application", "PetersPizza.Api.Application\PetersPizza.Api.Application.csproj", "{23C31129-52BB-4D60-8021-EA406340FD16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetersPizza.Api.Application.Interfaces", "PetersPizza.Api.Application.Interfaces\PetersPizza.Api.Application.Interfaces.csproj", "{A62E1119-645A-490B-BA12-28DA3CEFF86E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetersPizza.Api.ViewModels", "PetersPizza.Api.ViewModels\PetersPizza.Api.ViewModels.csproj", "{24EBA93B-D739-46F5-8543-16612ED47E86}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetersPizza.Api.Infrastructure.Common", "PetersPizza.Api.Infrastructure.Common\PetersPizza.Api.Infrastructure.Common.csproj", "{65691446-7CF5-4F25-8AFD-DCEB3B198FBB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{61580737-1EA7-410C-8EA5-EF8C6F265699}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61580737-1EA7-410C-8EA5-EF8C6F265699}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61580737-1EA7-410C-8EA5-EF8C6F265699}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61580737-1EA7-410C-8EA5-EF8C6F265699}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FCCE0A1-C4AD-4EF1-A025-EB4871232623}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FCCE0A1-C4AD-4EF1-A025-EB4871232623}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FCCE0A1-C4AD-4EF1-A025-EB4871232623}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FCCE0A1-C4AD-4EF1-A025-EB4871232623}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F95D869-6BDC-4F17-B478-09A3D36A9E6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F95D869-6BDC-4F17-B478-09A3D36A9E6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F95D869-6BDC-4F17-B478-09A3D36A9E6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F95D869-6BDC-4F17-B478-09A3D36A9E6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EBBC735-2294-4C4C-B982-0CAC7A9005CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EBBC735-2294-4C4C-B982-0CAC7A9005CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EBBC735-2294-4C4C-B982-0CAC7A9005CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EBBC735-2294-4C4C-B982-0CAC7A9005CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2E2070D-0986-468D-BC47-8814C0528F13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2E2070D-0986-468D-BC47-8814C0528F13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2E2070D-0986-468D-BC47-8814C0528F13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2E2070D-0986-468D-BC47-8814C0528F13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9447DB76-E1B5-4A23-9F8D-1B2DB058ED4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9447DB76-E1B5-4A23-9F8D-1B2DB058ED4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9447DB76-E1B5-4A23-9F8D-1B2DB058ED4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9447DB76-E1B5-4A23-9F8D-1B2DB058ED4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23C31129-52BB-4D60-8021-EA406340FD16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23C31129-52BB-4D60-8021-EA406340FD16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23C31129-52BB-4D60-8021-EA406340FD16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23C31129-52BB-4D60-8021-EA406340FD16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A62E1119-645A-490B-BA12-28DA3CEFF86E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A62E1119-645A-490B-BA12-28DA3CEFF86E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A62E1119-645A-490B-BA12-28DA3CEFF86E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A62E1119-645A-490B-BA12-28DA3CEFF86E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24EBA93B-D739-46F5-8543-16612ED47E86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24EBA93B-D739-46F5-8543-16612ED47E86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24EBA93B-D739-46F5-8543-16612ED47E86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24EBA93B-D739-46F5-8543-16612ED47E86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65691446-7CF5-4F25-8AFD-DCEB3B198FBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65691446-7CF5-4F25-8AFD-DCEB3B198FBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65691446-7CF5-4F25-8AFD-DCEB3B198FBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65691446-7CF5-4F25-8AFD-DCEB3B198FBB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{47ADAF4F-D2A6-4AEF-A8FF-64E96A724988} = {8AC446BF-6377-4809-B343-7C7BF50F8A01}
+		{8FCCE0A1-C4AD-4EF1-A025-EB4871232623} = {47ADAF4F-D2A6-4AEF-A8FF-64E96A724988}
+		{5F95D869-6BDC-4F17-B478-09A3D36A9E6F} = {8AC446BF-6377-4809-B343-7C7BF50F8A01}
+		{2EBBC735-2294-4C4C-B982-0CAC7A9005CC} = {8AC446BF-6377-4809-B343-7C7BF50F8A01}
+		{D2E2070D-0986-468D-BC47-8814C0528F13} = {8AC446BF-6377-4809-B343-7C7BF50F8A01}
+		{65691446-7CF5-4F25-8AFD-DCEB3B198FBB} = {8AC446BF-6377-4809-B343-7C7BF50F8A01}
+	EndGlobalSection
+EndGlobal

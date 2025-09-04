@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "PetersPizza.Api.Models/1.0.0": {
+        "runtime": {
+          "PetersPizza.Api.Models.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "PetersPizza.Api.Models/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

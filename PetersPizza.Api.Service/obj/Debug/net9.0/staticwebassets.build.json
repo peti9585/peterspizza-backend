@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "zLPBlYxEwB2DVKBbire5wIOf/o3TFszs7pVXP363b8I=",
+  "Source": "PetersPizza.Api.Service",
+  "BasePath": "_content/PetersPizza.Api.Service",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
