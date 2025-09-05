@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace PetersPizza.Api.Infrastructure.Repositories;
 
+[ExcludeFromCodeCoverage]
 internal static class Constants
 {
     // Stored Procedures
