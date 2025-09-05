@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace PetersPizza.Api.Service;
 
+[ExcludeFromCodeCoverage]
 internal static class Constants
 {
     // Roles and Policies

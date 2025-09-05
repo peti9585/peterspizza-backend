@@ -1,5 +1,7 @@
 using Carter;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -11,10 +13,12 @@ namespace PetersPizza.Api.Infrastructure.API.Host.Controllers;
 
 public class UserController() : CarterModule("api/user")
 {
+    private const string Tag = "User";
+    
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
         // User Registration
-        app.MapPost<RegisterUserRequest>("register", async (
+        app.MapPost<RegisterUserRequest>("/register", async (
             [FromBody]RegisterUserRequest request, 
             IValidator<RegisterUserRequest> validator,
             IMapper mapper,
@@ -28,10 +32,11 @@ public class UserController() : CarterModule("api/user")
             return userId > 0 
                 ? Results.Ok()
                 : Results.Conflict();
-        });
+        })
+        .WithTags(Tag);
         
         // User Login
-        app.MapPost<LoginUserRequest>("login", async (
+        app.MapPost<LoginUserRequest>("/login", async (
             [FromBody]LoginUserRequest request,
             HttpContext context,
             IValidator<LoginUserRequest> validator,
@@ -48,14 +53,16 @@ public class UserController() : CarterModule("api/user")
                 return Results.NotFound();
             }
             
-            context.Response.Cookies.Append("jwt", response.JwtToken, new CookieOptions
-            {
-                HttpOnly = true,
-                //Secure = true, TODO: Enable in production,
-                Expires = DateTime.UtcNow.AddHours(1)
-            });
-            
-            return Results.Ok(response.Name);
-        });
+            return Results.Ok(response);
+        })
+        .WithTags(Tag);
+        
+        app.MapGet("/me", async (HttpContext context) => 
+        {
+            var user = context.User;
+            return Results.Ok(user);
+        })
+        .WithTags(Tag)
+        .RequireAuthorization("User");
     }
 }
