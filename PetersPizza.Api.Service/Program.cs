@@ -2,6 +2,7 @@ using System.Text;
 using Autofac.Extensions.DependencyInjection;
 using Carter;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using PetersPizza.Api.Infrastructure.API.Host.Middlewares;
 using PetersPizza.Api.Service;
@@ -34,6 +35,7 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddAntiforgery();
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy(Constants.User, p => p.RequireRole(Constants.User));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -61,14 +63,23 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseCors(Constants.DefaultCorsPolicy);
-//app.UseHttpsRedirection(); TODO: Enable in production
-app.UseRouting();
-
-app.UseMiddleware<UnhandledExceptionFilterMiddleware>();
-app.MapCarter();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "wwwroot")),
+    RequestPath = "/images"
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseCors(Constants.DefaultCorsPolicy);
+//app.UseHttpsRedirection(); TODO: Enable in production
+
+app.UseRouting();
+app.UseAntiforgery();
+
+app.UseMiddleware<UnhandledExceptionFilterMiddleware>();
+app.MapCarter();
 
 app.Run();

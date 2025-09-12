@@ -1,4 +1,4 @@
-namespace PetersPizza.Api.Models.User;
+namespace PetersPizza.Api.ViewModels.User;
 
 public class LoginUserResponse
 {

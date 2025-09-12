@@ -1,9 +1,7 @@
 namespace PetersPizza.Api.Models.User;
 
-public class LoginUserResponse
+public class RefreshJwtTokenResponse
 {
-    public string Name { get; init; } = string.Empty;
-
     public string JwtToken { get; init; } = string.Empty;
     
     public Guid RefreshToken { get; init; }

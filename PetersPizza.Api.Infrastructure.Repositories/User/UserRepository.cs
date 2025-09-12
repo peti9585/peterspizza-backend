@@ -39,7 +39,44 @@ public class UserRepository(IConfiguration configuration,
         
         return result is null ? new LoginUserInformation() : mapper.Map(result);
     }
-    
+
+    public async Task UpsertRefreshTokenAsync(int userId, Guid refreshToken)
+    {
+        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
+        var parameters = CreateUpsertRefreshTokenParameters(userId, refreshToken);
+        
+        conn.Open();
+        await conn.ExecuteAsync(sql: Constants.UpsertRefreshTokenSp,
+            param: parameters, 
+            commandType: CommandType.StoredProcedure);
+        conn.Close();
+    }
+
+    public async Task<UserInfo> GetUserByRefreshTokenAsync(Guid refreshToken)
+    {
+        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
+        var parameters = new DynamicParameters();
+        parameters.Add("@RefreshToken", refreshToken, DbType.Guid);
+        
+        conn.Open();
+        var result = await conn.QuerySingleOrDefaultAsync<DbUserInfo>(sql: Constants.GetUserByRefreshTokenSp,
+            param: parameters, 
+            commandType: CommandType.StoredProcedure);
+        conn.Close();
+        
+        return result is null ? new UserInfo() : mapper.Map(result);
+    }
+
+    private static DynamicParameters CreateUpsertRefreshTokenParameters(int userId, Guid refreshToken)
+    {
+        var parameters = new DynamicParameters();
+        
+        parameters.Add("@UserId", userId, DbType.Int32);
+        parameters.Add("@RefreshToken", refreshToken, DbType.Guid);
+        
+        return parameters;
+    }
+
     private static DynamicParameters CreateLoginUserParameters(LoginUserRequest request)
     {
         var parameters = new DynamicParameters();

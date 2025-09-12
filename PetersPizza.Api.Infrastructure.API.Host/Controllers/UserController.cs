@@ -50,8 +50,29 @@ public class UserController() : CarterModule("api/user")
                 return Results.NotFound();
             }
             
-            return Results.Ok(response);
+            var viewModel = mapper.Map(response);
+            
+            return Results.Ok(viewModel);
         })
+        .WithTags(Tag);
+        
+        // Refresh JWT Token
+        app.MapPost<RefreshJwtTokenRequest>("/refresh-token", async (
+                [FromBody]RefreshJwtTokenRequest request,
+                IValidator<RefreshJwtTokenRequest> validator,
+                IUserService userService,
+                IMapper mapper) => 
+            {
+                validator.ValidateAndThrow(request);
+                
+                var requestModel = mapper.Map(request);
+
+                var response = await userService.RefreshJwtTokenAsync(requestModel);
+                
+                var viewModel = mapper.Map(response);
+                
+                return Results.Ok(viewModel);
+            })
         .WithTags(Tag);
     }
 }

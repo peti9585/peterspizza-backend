@@ -1,4 +1,5 @@
 using PetersPizza.Api.Infrastructure.Interfaces.Mappers;
+using PetersPizza.Api.Models.Admin;
 using PetersPizza.Api.Models.User;
 
 namespace PetersPizza.Api.Infrastructure.Common.Mappers;
@@ -21,5 +22,19 @@ public partial class Mapper : MapperBase, IMapper
         {
             UserName = request.UserName,
             Password = request.Password
+        };
+
+    public RefreshJwtTokenRequest Map(ViewModels.User.RefreshJwtTokenRequest request)
+        => new()
+        {
+            RefreshToken = request.RefreshToken
+        };
+
+    public UploadPizzaRequest Map(ViewModels.Admin.UploadPizzaRequest request)
+        => new()
+        {
+            PizzaName = request.PizzaName,
+            Description = request.Description,
+            PizzaImage = request.PizzaImage
         };
 }
