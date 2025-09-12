@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Autofac;
 using FluentValidation;
 using PetersPizza.Api.Infrastructure.API.Host.Validators;
+using PetersPizza.Api.ViewModels.Admin;
 using PetersPizza.Api.ViewModels.User;
 
 namespace PetersPizza.Api.Infrastructure.API.Host;
@@ -14,5 +15,8 @@ public sealed class AutofacModule : Module
         // Validators
         builder.RegisterType<RegisterUserRequestValidator>().As<IValidator<RegisterUserRequest>>().SingleInstance();
         builder.RegisterType<LoginUserRequestValidator>().As<IValidator<LoginUserRequest>>().SingleInstance();
+        builder.RegisterType<RefreshJwtTokenRequestValidator>().As<IValidator<RefreshJwtTokenRequest>>().SingleInstance();
+
+        builder.RegisterType<UploadPizzaRequestValidator>().As<IValidator<UploadPizzaRequest>>().SingleInstance();
     }
 }

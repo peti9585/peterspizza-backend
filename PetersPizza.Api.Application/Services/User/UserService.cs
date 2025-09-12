@@ -40,13 +40,39 @@ public class UserService(
 
         if (!IsValidPassword(request.Password, repositoryResponse.PasswordHash)) return new LoginUserResponse();
 
+        var refreshToken = await UpsertRefreshTokenAsync(repositoryResponse.UserId);
+
         return new LoginUserResponse
         {
             Name = repositoryResponse.Name,
-            JwtToken = GenerateJwtTokenForUser(request.UserName)
+            JwtToken = GenerateJwtTokenForUser(request.UserName),
+            RefreshToken = refreshToken
+        };
+    }
+
+    public async Task<RefreshJwtTokenResponse> RefreshJwtTokenAsync(RefreshJwtTokenRequest request)
+    {
+        var getUserInfo = await userRepository.GetUserByRefreshTokenAsync(request.RefreshToken);
+        
+        if (getUserInfo.Id is 0) return new RefreshJwtTokenResponse();
+        
+        var refreshToken = await UpsertRefreshTokenAsync(getUserInfo.Id);
+
+        return new RefreshJwtTokenResponse
+        {
+            JwtToken = GenerateJwtTokenForUser(getUserInfo.UserName),
+            RefreshToken = refreshToken
         };
     }
     
+    private async Task<Guid> UpsertRefreshTokenAsync(int userId)
+    {
+        var refreshToken = Guid.NewGuid();
+        await userRepository.UpsertRefreshTokenAsync(userId, refreshToken);
+        
+        return refreshToken;
+    }
+
     private bool IsValidPassword(string providedPassword, string storedPasswordHash)
     {
         if (string.IsNullOrWhiteSpace(storedPasswordHash)) return false;
@@ -67,7 +93,7 @@ public class UserService(
                 new Claim(ClaimTypes.Role, Constants.UserRole)
             ]),
             Issuer = Constants.ApplicationName,
-            Expires = DateTime.UtcNow.AddHours(1),
+            Expires = DateTime.UtcNow.AddMinutes(30),
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!)),
                 SecurityAlgorithms.HmacSha256Signature)
