@@ -1,5 +1,7 @@
+using PetersPizza.Api.Infrastructure.DataTransferObjects.Pizza;
 using PetersPizza.Api.Infrastructure.DataTransferObjects.User;
 using PetersPizza.Api.Infrastructure.Interfaces.Mappers;
+using PetersPizza.Api.Models.Pizza;
 using PetersPizza.Api.Models.User;
 
 namespace PetersPizza.Api.Infrastructure.Common.Mappers;
@@ -19,5 +21,16 @@ public partial class Mapper : IMapper
         {
             Id = dbUserInfo.Id,
             UserName = dbUserInfo.UserName
+        };
+
+    public GetAllPizzaDetailsResponse Map(IEnumerable<DbPizza> dbPizzas)
+        => new() { GetAllPizzaDetailResponses = MapEnumerable(dbPizzas, Map) };
+
+    private static GetAllPizzaDetailResponse Map(DbPizza dbPizza)
+        => new()
+        {
+            PizzaName = dbPizza.Name,
+            Description = dbPizza.Description,
+            PizzaImageId = dbPizza.ImageId
         };
 }
