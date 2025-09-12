@@ -292,3 +292,12 @@ packages/
 .DS_Store
 Thumbs.db
 
+# Auto-generated build files
+*.AssemblyInfo.cs
+*.csproj.nuget.g.props
+*.csproj.nuget.g.targets
+
+# Build folders
+bin/
+obj/
+
