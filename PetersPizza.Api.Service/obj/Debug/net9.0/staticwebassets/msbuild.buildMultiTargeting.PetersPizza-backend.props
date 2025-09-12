@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../build/PetersPizza-backend.props" />
-</Project>
