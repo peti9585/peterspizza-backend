@@ -1,12 +1,10 @@
 namespace PetersPizza.Api.Infrastructure.DataTransferObjects.Pizza;
 
-public class DbPizza
+public class DbPizzaById
 {
     public int Id { get; init; }
     
     public string Name { get; init; } = string.Empty;
     
-    public string Description { get; init; } = string.Empty;
-    
-    public Guid ImageId { get; init; }
+    public decimal Price { get; init; }
 }

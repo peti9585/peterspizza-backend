@@ -26,6 +26,7 @@ public class AdminService(
         {
             PizzaName = request.PizzaName,
             Description = request.Description,
+            PizzaPrice = request.PizzaPrice,
             PizzaImageId = fileName
         };
         

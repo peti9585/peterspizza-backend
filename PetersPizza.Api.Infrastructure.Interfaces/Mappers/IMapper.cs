@@ -18,9 +18,11 @@ public interface IMapper
     ViewModels.User.LoginUserResponse Map(LoginUserResponse response);
     ViewModels.User.RefreshJwtTokenResponse Map(RefreshJwtTokenResponse response);
     ViewModels.Pizza.GetAllPizzasResponse Map(GetAllPizzasResponse response);
+    ViewModels.Pizza.GetPizzasByIdsResponse Map(GetPizzasByIdsResponse response);
     
     // Data Access Objects to Models
     LoginUserInformation Map(DbLoginUserInformation dbLoginUserInformation);
     UserInfo Map(DbUserInfo dbUserInfo);
     GetAllPizzaDetailsResponse Map(IEnumerable<DbPizza> dbPizzas);
+    GetPizzasByIdsResponse Map(IEnumerable<DbPizzaById> source);
 }

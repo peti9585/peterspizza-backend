@@ -18,6 +18,9 @@ public class PizzaService(
         return new GetAllPizzasResponse { GetAllPizzasResponses = getAllPizzasResponseList };
     }
 
+    public Task<GetPizzasByIdsResponse> GetPizzasByIdsAsync(IEnumerable<int> pizzaIds)
+        => pizzaRepository.GetPizzasByIdsAsync(pizzaIds);
+
     private IEnumerable<GetPizzaResponse> GetPizzaResponse(GetAllPizzaDetailsResponse response)
     {
         foreach (var pizza in response.GetAllPizzaDetailResponses)
@@ -28,6 +31,7 @@ public class PizzaService(
             
             yield return new GetPizzaResponse
             {
+                PizzaId = pizza.PizzaId,
                 PizzaName = pizza.PizzaName,
                 Description = pizza.Description,
                 PizzaImageBytes = imageBytes

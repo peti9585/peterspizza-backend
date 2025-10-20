@@ -1,12 +1,10 @@
 namespace PetersPizza.Api.Models.Pizza;
 
-public class GetAllPizzaDetailResponse
+public class GetPizzaByIdResponse
 {
     public int PizzaId { get; init; }
     
     public string PizzaName { get; init; } = string.Empty;
     
-    public string Description { get; init; } = string.Empty;
-    
-    public Guid PizzaImageId { get; init; }
+    public decimal PizzaPrice { get; init; }
 }

@@ -26,4 +26,36 @@ public class PizzaRepository(
 
         return model;
     }
+
+    public async Task<GetPizzasByIdsResponse> GetPizzasByIdsAsync(IEnumerable<int> pizzaIds)
+    {
+        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
+        var parameters = CreateIntIdsUdt(pizzaIds);
+        
+        conn.Open();
+        var result = await conn.QueryAsync<DbPizzaById>(sql: Constants.GetPizzasByIdsSp,
+            param: parameters,
+            commandType: CommandType.StoredProcedure);
+        conn.Close();
+
+        var model = mapper.Map(result);
+
+        return model;
+    }
+
+    private static DynamicParameters CreateIntIdsUdt(IEnumerable<int> ids)
+    {
+        var parameters = new DynamicParameters();
+        var table = new DataTable();
+        table.Columns.Add("Id", typeof(int));
+
+        foreach (var id in ids)
+        {
+            table.Rows.Add(id);
+        }
+        
+        parameters.Add("@Ids", table.AsTableValuedParameter());
+        
+        return parameters;
+    }
 }

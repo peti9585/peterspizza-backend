@@ -35,6 +35,7 @@ public partial class Mapper : MapperBase, IMapper
         {
             PizzaName = request.PizzaName,
             Description = request.Description,
+            PizzaPrice = request.PizzaPrice,
             PizzaImage = request.PizzaImage
         };
 }

@@ -8,5 +8,7 @@ public class UploadPizzaRequest
     
     public string Description { get; init; } = string.Empty;
     
+    public decimal PizzaPrice { get; init; }
+    
     public IFormFile PizzaImage { get; init; }
 }

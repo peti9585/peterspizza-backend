@@ -26,11 +26,23 @@ public partial class Mapper : IMapper
     public GetAllPizzaDetailsResponse Map(IEnumerable<DbPizza> dbPizzas)
         => new() { GetAllPizzaDetailResponses = MapEnumerable(dbPizzas, Map) };
 
+    public GetPizzasByIdsResponse Map(IEnumerable<DbPizzaById> source)
+        => new() { GetPizzaResponses = MapEnumerable(source, Map) };
+
     private static GetAllPizzaDetailResponse Map(DbPizza dbPizza)
         => new()
         {
+            PizzaId = dbPizza.Id,
             PizzaName = dbPizza.Name,
             Description = dbPizza.Description,
             PizzaImageId = dbPizza.ImageId
+        };
+    
+    private static GetPizzaByIdResponse Map(DbPizzaById source)
+        => new()
+        {
+            PizzaId = source.Id,
+            PizzaName = source.Name,
+            PizzaPrice = source.Price
         };
 }

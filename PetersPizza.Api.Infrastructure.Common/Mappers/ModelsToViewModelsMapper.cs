@@ -27,11 +27,26 @@ public partial class Mapper : IMapper
             GetAllPizzasResponses = MapEnumerable(request.GetAllPizzasResponses, Map)
         };
 
+    public GetPizzasByIdsResponse Map(Models.Pizza.GetPizzasByIdsResponse source)
+        => new()
+        {
+            GetPizzaResponses = MapEnumerable(source.GetPizzaResponses, Map)
+        };
+
     private static GetPizzaResponse Map(Models.Pizza.GetPizzaResponse request)
         => new()
         {
+            PizzaId = request.PizzaId,
             PizzaName = request.PizzaName,
             Description = request.Description,
             PizzaImageBytes = request.PizzaImageBytes
+        };
+    
+    private static GetPizzaByIdResponse Map(Models.Pizza.GetPizzaByIdResponse source)
+        => new()
+        {
+            PizzaId = source.PizzaId,
+            PizzaName = source.PizzaName,
+            PizzaPrice = source.PizzaPrice
         };
 }
