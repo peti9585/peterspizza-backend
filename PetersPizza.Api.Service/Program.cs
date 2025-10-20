@@ -70,9 +70,6 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/images"
 });
 
-app.UseAuthentication();
-app.UseAuthorization();
-
 app.UseCors(Constants.DefaultCorsPolicy);
 //app.UseHttpsRedirection(); TODO: Enable in production
 
@@ -81,5 +78,8 @@ app.UseAntiforgery();
 
 app.UseMiddleware<UnhandledExceptionFilterMiddleware>();
 app.MapCarter();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.Run();

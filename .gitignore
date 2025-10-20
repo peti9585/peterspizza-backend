@@ -301,3 +301,5 @@ Thumbs.db
 bin/*
 obj/*
 
+wwwroot/*
+

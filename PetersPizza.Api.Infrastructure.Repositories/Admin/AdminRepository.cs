@@ -27,6 +27,7 @@ public class AdminRepository(IConfiguration configuration) : IAdminRepository
         
         parameters.Add("@Name", request.PizzaName, DbType.String);
         parameters.Add("@Description", request.Description, DbType.String);
+        parameters.Add("@Price", request.PizzaPrice, DbType.Decimal, precision: 18, scale: 2);
         parameters.Add("@ImageId", request.PizzaImageId, DbType.Guid);
         
         return parameters;
