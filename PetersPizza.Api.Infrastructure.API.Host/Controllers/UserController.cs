@@ -1,5 +1,8 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Carter;
 using FluentValidation;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -74,5 +77,34 @@ public class UserController() : CarterModule("api/user")
                 return Results.Ok(viewModel);
             })
         .WithTags(Tag);
+        
+        app.MapGet("/getbyid", async (
+                HttpContext context,
+                IMapper mapper,
+                IUserService userService) =>
+            {
+                var userIdString = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrWhiteSpace(userIdString)) return Results.BadRequest("Invalid credentials.");
+                
+                int.TryParse(userIdString, out var userId);
+                if (userId <= 0) return Results.BadRequest("Invalid user ID.");
+                
+                var response = await userService.GetUserByIdAsync(userId);
+                
+                if (!IsValidResponse(response)) return Results.NotFound();
+
+                var viewModel = mapper.Map(response);
+                
+                return Results.Ok(viewModel);
+            })
+        .WithTags(Tag);
+    }
+
+    private static bool IsValidResponse(Models.User.GetUserDetailsByIdResponse response)
+    {
+        return !string.IsNullOrWhiteSpace(response.FirstName) &&
+               !string.IsNullOrWhiteSpace(response.LastName) &&
+               !string.IsNullOrWhiteSpace(response.PhoneNumber) &&
+               !string.IsNullOrWhiteSpace(response.Email);
     }
 }

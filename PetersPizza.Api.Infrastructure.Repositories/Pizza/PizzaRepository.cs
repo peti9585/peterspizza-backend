@@ -9,6 +9,7 @@ using PetersPizza.Api.Models.Pizza;
 
 namespace PetersPizza.Api.Infrastructure.Repositories.Pizza;
 
+// TODO: Align connection with some wrapper class
 public class PizzaRepository(
     IConfiguration configuration,
     IMapper mapper) : IPizzaRepository
@@ -42,6 +43,18 @@ public class PizzaRepository(
 
         return model;
     }
+    
+    public async Task InsertPizzaOrderAsync(OrderPizzasRequest request)
+    {
+        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
+        var parameters = CreateInsertOrderUdt(request);
+        
+        conn.Open();
+        await conn.ExecuteAsync(sql: Constants.InsertPizzaOrderSp,
+            param: parameters,
+            commandType: CommandType.StoredProcedure);
+        conn.Close();
+    }
 
     private static DynamicParameters CreateIntIdsUdt(IEnumerable<int> ids)
     {
@@ -55,6 +68,25 @@ public class PizzaRepository(
         }
         
         parameters.Add("@Ids", table.AsTableValuedParameter());
+        
+        return parameters;
+    }
+    
+    private static DynamicParameters CreateInsertOrderUdt(OrderPizzasRequest request)
+    {
+        var parameters = new DynamicParameters();
+        var table = new DataTable();
+        table.Columns.Add("PizzaId", typeof(int));
+        table.Columns.Add("PizzaCount", typeof(int));
+
+        foreach (var pizzas in request.OrderPizzaRequests)
+        {
+            table.Rows.Add(pizzas.PizzaId, pizzas.Quantity);
+        }
+        
+        parameters.Add("@UserId", request.UserId);
+        parameters.Add("@OrderId", request.OrderId);
+        parameters.Add("@PizzaDetails", table.AsTableValuedParameter(Constants.InsertOrderUdt));
         
         return parameters;
     }

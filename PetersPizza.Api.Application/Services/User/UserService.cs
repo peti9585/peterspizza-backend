@@ -45,7 +45,7 @@ public class UserService(
         return new LoginUserResponse
         {
             Name = repositoryResponse.Name,
-            JwtToken = GenerateJwtTokenForUser(request.UserName),
+            JwtToken = GenerateJwtTokenForUser(request.UserName, repositoryResponse.UserId),
             RefreshToken = refreshToken
         };
     }
@@ -60,11 +60,14 @@ public class UserService(
 
         return new RefreshJwtTokenResponse
         {
-            JwtToken = GenerateJwtTokenForUser(getUserInfo.UserName),
+            JwtToken = GenerateJwtTokenForUser(getUserInfo.UserName, getUserInfo.Id),
             RefreshToken = refreshToken
         };
     }
-    
+
+    public Task<GetUserDetailsByIdResponse> GetUserByIdAsync(int userId)
+        => userRepository.GetUserByIdAsync(userId);
+
     private async Task<Guid> UpsertRefreshTokenAsync(int userId)
     {
         var refreshToken = Guid.NewGuid();
@@ -82,7 +85,7 @@ public class UserService(
         return result == PasswordVerificationResult.Success;
     }
 
-    private string GenerateJwtTokenForUser(string userName)
+    private string GenerateJwtTokenForUser(string userName, int userId)
     {
         var key = configuration.GetSection(Constants.JwtKey).Value;
 
@@ -90,7 +93,8 @@ public class UserService(
         {
             Subject = new ClaimsIdentity([
                 new Claim(ClaimTypes.Name, userName),
-                new Claim(ClaimTypes.Role, Constants.UserRole)
+                new Claim(ClaimTypes.Role, Constants.UserRole),
+                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString())
             ]),
             Issuer = Constants.ApplicationName,
             Expires = DateTime.UtcNow.AddMinutes(30),

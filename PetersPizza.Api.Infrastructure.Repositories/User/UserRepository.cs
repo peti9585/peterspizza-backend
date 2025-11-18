@@ -67,6 +67,21 @@ public class UserRepository(IConfiguration configuration,
         return result is null ? new UserInfo() : mapper.Map(result);
     }
 
+    public async Task<GetUserDetailsByIdResponse> GetUserByIdAsync(int userId)
+    {
+        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
+        var parameters = new DynamicParameters();
+        parameters.Add("@UserId", userId, DbType.Int32);
+        
+        conn.Open();
+        var result = await conn.QuerySingleOrDefaultAsync<DbGetUserDetailsByIdResponse>(sql: Constants.GetUserDetailsByIdSp,
+            param: parameters, 
+            commandType: CommandType.StoredProcedure);
+        conn.Close();
+        
+        return result is null ? new GetUserDetailsByIdResponse() : mapper.Map(result);
+    }
+
     private static DynamicParameters CreateUpsertRefreshTokenParameters(int userId, Guid refreshToken)
     {
         var parameters = new DynamicParameters();

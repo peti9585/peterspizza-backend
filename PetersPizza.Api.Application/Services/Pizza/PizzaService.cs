@@ -18,6 +18,9 @@ public class PizzaService(
         return new GetAllPizzasResponse { GetAllPizzasResponses = getAllPizzasResponseList };
     }
 
+    public Task InsertPizzaOrderAsync(OrderPizzasRequest request)
+        => pizzaRepository.InsertPizzaOrderAsync(request);
+
     public Task<GetPizzasByIdsResponse> GetPizzasByIdsAsync(IEnumerable<int> pizzaIds)
         => pizzaRepository.GetPizzasByIdsAsync(pizzaIds);
 

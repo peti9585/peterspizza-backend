@@ -1,5 +1,6 @@
 using PetersPizza.Api.Infrastructure.Interfaces.Mappers;
 using PetersPizza.Api.Models.Admin;
+using PetersPizza.Api.Models.Pizza;
 using PetersPizza.Api.Models.User;
 
 namespace PetersPizza.Api.Infrastructure.Common.Mappers;
@@ -37,5 +38,20 @@ public partial class Mapper : MapperBase, IMapper
             Description = request.Description,
             PizzaPrice = request.PizzaPrice,
             PizzaImage = request.PizzaImage
+        };
+
+    public OrderPizzasRequest Map(ViewModels.Pizza.OrderPizzasRequest request)
+        => new()
+        {
+            UserId = request.UserId,
+            OrderId = request.OrderId,
+            OrderPizzaRequests = MapEnumerable(request.OrderPizzaRequests, Map)
+        };
+
+    private static OrderPizzaRequest Map(ViewModels.Pizza.OrderPizzaRequest request)
+        => new()
+        {
+            PizzaId = request.PizzaId,
+            Quantity = request.Quantity
         };
 }

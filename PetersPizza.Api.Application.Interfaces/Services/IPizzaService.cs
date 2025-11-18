@@ -7,4 +7,6 @@ public interface IPizzaService
     Task<GetAllPizzasResponse> GetAllPizzasAsync();
 
     Task<GetPizzasByIdsResponse> GetPizzasByIdsAsync(IEnumerable<int> pizzaIds);
+
+    Task InsertPizzaOrderAsync(OrderPizzasRequest request);
 }
