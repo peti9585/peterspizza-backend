@@ -1,10 +1,14 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Carter;
+using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using PetersPizza.Api.Application.Interfaces.Services;
 using PetersPizza.Api.Infrastructure.Interfaces.Mappers;
+using PetersPizza.Api.ViewModels.Pizza;
 
 namespace PetersPizza.Api.Infrastructure.API.Host.Controllers;
 
@@ -14,7 +18,7 @@ public class PizzaController() : CarterModule("api/pizza")
 
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("/getall", async(
+        app.MapGet("/getall", async (
                 IPizzaService pizzaService,
                 IMapper mapper) =>
             {
@@ -26,7 +30,7 @@ public class PizzaController() : CarterModule("api/pizza")
         .WithTags(Tag)
         .RequireAuthorization("User");
         
-        app.MapPost("/getbyids", async(
+        app.MapPost("/getbyids", async (
                 [FromBody]IEnumerable<int> pizzaIds,
                 IPizzaService pizzaService,
                 IMapper mapper) =>
@@ -41,6 +45,35 @@ public class PizzaController() : CarterModule("api/pizza")
             var mappedResult = mapper.Map(result);
             
             return Results.Ok(mappedResult);
+        })
+        .WithTags(Tag)
+        .RequireAuthorization("User");
+        
+        app.MapPost("/order", async (
+                HttpContext context,
+                [FromBody]OrderPizzasRequest request,
+                IValidator<OrderPizzasRequest> validator,
+                IPizzaService pizzaService,
+                IMapper mapper) =>
+        {
+            var userIdString = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userIdString)) return Results.BadRequest("Invalid credentials.");
+                
+            int.TryParse(userIdString, out var userId);
+
+            var finalRequest = new OrderPizzasRequest
+            {
+                UserId = userId,
+                OrderId = request.OrderId,
+                OrderPizzaRequests = request.OrderPizzaRequests
+            };
+            
+            validator.ValidateAndThrow(finalRequest);
+            var requestModel = mapper.Map(finalRequest);
+
+            await pizzaService.InsertPizzaOrderAsync(requestModel);
+            
+            return Results.Ok();
         })
         .WithTags(Tag)
         .RequireAuthorization("User");

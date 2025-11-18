@@ -33,6 +33,15 @@ public partial class Mapper : IMapper
             GetPizzaResponses = MapEnumerable(source.GetPizzaResponses, Map)
         };
 
+    public GetUserDetailsByIdResponse Map(Models.User.GetUserDetailsByIdResponse source)
+        => new()
+        {
+            FirstName = source.FirstName,
+            LastName = source.LastName,
+            PhoneNumber = source.PhoneNumber,
+            Email = source.Email
+        };
+
     private static GetPizzaResponse Map(Models.Pizza.GetPizzaResponse request)
         => new()
         {

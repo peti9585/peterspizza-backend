@@ -13,16 +13,19 @@ public interface IMapper
     LoginUserRequest Map(ViewModels.User.LoginUserRequest request);
     RefreshJwtTokenRequest Map(ViewModels.User.RefreshJwtTokenRequest request);
     UploadPizzaRequest Map(ViewModels.Admin.UploadPizzaRequest request);
+    OrderPizzasRequest Map(ViewModels.Pizza.OrderPizzasRequest request);
     
     // Models to ViewModels
     ViewModels.User.LoginUserResponse Map(LoginUserResponse response);
     ViewModels.User.RefreshJwtTokenResponse Map(RefreshJwtTokenResponse response);
     ViewModels.Pizza.GetAllPizzasResponse Map(GetAllPizzasResponse response);
     ViewModels.Pizza.GetPizzasByIdsResponse Map(GetPizzasByIdsResponse response);
+    ViewModels.User.GetUserDetailsByIdResponse Map(GetUserDetailsByIdResponse response);
     
     // Data Access Objects to Models
     LoginUserInformation Map(DbLoginUserInformation dbLoginUserInformation);
     UserInfo Map(DbUserInfo dbUserInfo);
     GetAllPizzaDetailsResponse Map(IEnumerable<DbPizza> dbPizzas);
     GetPizzasByIdsResponse Map(IEnumerable<DbPizzaById> source);
+    GetUserDetailsByIdResponse Map(DbGetUserDetailsByIdResponse source);
 }

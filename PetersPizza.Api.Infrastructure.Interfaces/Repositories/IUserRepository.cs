@@ -8,4 +8,5 @@ public interface IUserRepository
     public Task<LoginUserInformation> LoginUserAsync(LoginUserRequest request);
     public Task UpsertRefreshTokenAsync(int userId, Guid refreshToken);
     public Task<UserInfo> GetUserByRefreshTokenAsync(Guid refreshToken);
+    public Task<GetUserDetailsByIdResponse> GetUserByIdAsync(int userId);
 }
