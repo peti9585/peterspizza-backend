@@ -8,4 +8,5 @@ public interface IUserService
     public Task<LoginUserResponse> LoginUserAsync(LoginUserRequest request);
     public Task<RefreshJwtTokenResponse> RefreshJwtTokenAsync(RefreshJwtTokenRequest request);
     public Task<GetUserDetailsByIdResponse> GetUserByIdAsync(int userId);
+    public Task UpdateUserAsync(UpdateUserRequest request, int userId);
 }

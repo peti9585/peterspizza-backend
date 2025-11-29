@@ -14,6 +14,7 @@ public interface IMapper
     RefreshJwtTokenRequest Map(ViewModels.User.RefreshJwtTokenRequest request);
     UploadPizzaRequest Map(ViewModels.Admin.UploadPizzaRequest request);
     OrderPizzasRequest Map(ViewModels.Pizza.OrderPizzasRequest request);
+    UpdateUserRequest Map(ViewModels.User.UpdateUserRequest request);
     
     // Models to ViewModels
     ViewModels.User.LoginUserResponse Map(LoginUserResponse response);
@@ -21,11 +22,13 @@ public interface IMapper
     ViewModels.Pizza.GetAllPizzasResponse Map(GetAllPizzasResponse response);
     ViewModels.Pizza.GetPizzasByIdsResponse Map(GetPizzasByIdsResponse response);
     ViewModels.User.GetUserDetailsByIdResponse Map(GetUserDetailsByIdResponse response);
+    ViewModels.Pizza.GetAllOrdersResponse Map(GetAllOrdersResponse response);
     
     // Data Access Objects to Models
-    LoginUserInformation Map(DbLoginUserInformation dbLoginUserInformation);
-    UserInfo Map(DbUserInfo dbUserInfo);
-    GetAllPizzaDetailsResponse Map(IEnumerable<DbPizza> dbPizzas);
+    LoginUserInformation Map(DbLoginUserInformation source);
+    UserInfo Map(DbUserInfo source);
+    GetAllPizzaDetailsResponse Map(IEnumerable<DbPizza> source);
     GetPizzasByIdsResponse Map(IEnumerable<DbPizzaById> source);
     GetUserDetailsByIdResponse Map(DbGetUserDetailsByIdResponse source);
+    GetAllOrdersResponse Map(IEnumerable<DbGetAllOrders> source);
 }

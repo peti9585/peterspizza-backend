@@ -9,4 +9,6 @@ public interface IUserRepository
     public Task UpsertRefreshTokenAsync(int userId, Guid refreshToken);
     public Task<UserInfo> GetUserByRefreshTokenAsync(Guid refreshToken);
     public Task<GetUserDetailsByIdResponse> GetUserByIdAsync(int userId);
+    public Task<bool> AreUserValuesUniqueAsync(string phoneNumber, string email, int userId);
+    public Task UpdateUserAsync(UpdateUserRequest request, int userId);
 }

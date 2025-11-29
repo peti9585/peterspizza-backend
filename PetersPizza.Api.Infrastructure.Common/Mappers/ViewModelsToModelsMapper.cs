@@ -48,6 +48,15 @@ public partial class Mapper : MapperBase, IMapper
             OrderPizzaRequests = MapEnumerable(request.OrderPizzaRequests, Map)
         };
 
+    public UpdateUserRequest Map(ViewModels.User.UpdateUserRequest request)
+        => new()
+        {
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            PhoneNumber = request.PhoneNumber,
+            Email = request.Email
+        };
+
     private static OrderPizzaRequest Map(ViewModels.Pizza.OrderPizzaRequest request)
         => new()
         {

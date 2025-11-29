@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Carter;
 using FluentValidation;
@@ -78,6 +77,7 @@ public class UserController() : CarterModule("api/user")
             })
         .WithTags(Tag);
         
+        // Get User by Id
         app.MapGet("/getbyid", async (
                 HttpContext context,
                 IMapper mapper,
@@ -97,7 +97,34 @@ public class UserController() : CarterModule("api/user")
                 
                 return Results.Ok(viewModel);
             })
-        .WithTags(Tag);
+            .RequireAuthorization("User")
+            .WithTags(Tag);
+        
+        // Update User details
+        app.MapPut("/update-details", async (
+                HttpContext context,
+                [FromBody]UpdateUserRequest request,
+                IValidator<UpdateUserRequest> validator,
+                IMapper mapper,
+                IUserService userService) =>
+            {
+                var userIdString = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrWhiteSpace(userIdString)) return Results.BadRequest("Invalid credentials.");
+                
+                int.TryParse(userIdString, out var userId);
+                if (userId <= 0) return Results.BadRequest("Invalid user ID.");
+                
+                validator.ValidateAndThrow(request);
+                
+                var requestModel = mapper.Map(request);
+                
+                await userService.UpdateUserAsync(requestModel, userId);
+                
+                return Results.Ok();
+            })
+            .RequireAuthorization("User")
+            .RequireRateLimiting("RateLimitPolicy")
+            .WithTags(Tag);
     }
 
     private static bool IsValidResponse(Models.User.GetUserDetailsByIdResponse response)

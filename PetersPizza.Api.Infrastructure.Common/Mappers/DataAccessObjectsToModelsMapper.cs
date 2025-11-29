@@ -38,6 +38,12 @@ public partial class Mapper : IMapper
             Email = source.Email
         };
 
+    public GetAllOrdersResponse Map(IEnumerable<DbGetAllOrders> source)
+        => new()
+        {
+            GetAllOrderResponses = MapEnumerable(source, Map)
+        };
+
     private static GetAllPizzaDetailResponse Map(DbPizza dbPizza)
         => new()
         {
@@ -53,5 +59,13 @@ public partial class Mapper : IMapper
             PizzaId = source.Id,
             PizzaName = source.Name,
             PizzaPrice = source.Price
+        };
+    
+    private static GetAllOrderResponse Map(DbGetAllOrders source)
+        => new()
+        {
+            OrderId = source.OrderId,
+            OrderState = (OrderState)source.OrderState,
+            OrderDate = source.OrderDate
         };
 }

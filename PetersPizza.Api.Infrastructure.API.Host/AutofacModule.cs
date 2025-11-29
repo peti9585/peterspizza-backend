@@ -17,6 +17,7 @@ public sealed class AutofacModule : Module
         builder.RegisterType<RegisterUserRequestValidator>().As<IValidator<RegisterUserRequest>>().SingleInstance();
         builder.RegisterType<LoginUserRequestValidator>().As<IValidator<LoginUserRequest>>().SingleInstance();
         builder.RegisterType<RefreshJwtTokenRequestValidator>().As<IValidator<RefreshJwtTokenRequest>>().SingleInstance();
+        builder.RegisterType<UpdateUserRequestValidator>().As<IValidator<UpdateUserRequest>>().SingleInstance();
 
         builder.RegisterType<UploadPizzaRequestValidator>().As<IValidator<UploadPizzaRequest>>().SingleInstance();
         builder.RegisterType<OrderPizzaRequestValidator>().As<IValidator<OrderPizzaRequest>>().SingleInstance();

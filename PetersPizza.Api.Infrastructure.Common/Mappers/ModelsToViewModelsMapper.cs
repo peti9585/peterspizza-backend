@@ -42,6 +42,12 @@ public partial class Mapper : IMapper
             Email = source.Email
         };
 
+    public GetAllOrdersResponse Map(Models.Pizza.GetAllOrdersResponse response)
+        => new()
+        {
+            GetAllOrderResponses = MapEnumerable(response.GetAllOrderResponses, Map)
+        };
+
     private static GetPizzaResponse Map(Models.Pizza.GetPizzaResponse request)
         => new()
         {
@@ -57,5 +63,13 @@ public partial class Mapper : IMapper
             PizzaId = source.PizzaId,
             PizzaName = source.PizzaName,
             PizzaPrice = source.PizzaPrice
+        };
+
+    private static GetAllOrderResponse Map(Models.Pizza.GetAllOrderResponse source)
+        => new()
+        {
+            OrderId = source.OrderId,
+            OrderState = (OrderState)source.OrderState,
+            OrderDate = source.OrderDate
         };
 }
