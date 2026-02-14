@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR;
 using PetersPizza.Api.Application.Interfaces.Services;
+using PetersPizza.Api.Application.SignalR;
 using PetersPizza.Api.Infrastructure.Interfaces.Repositories;
 using PetersPizza.Api.Models.Pizza;
 
@@ -7,7 +9,9 @@ namespace PetersPizza.Api.Application.Services.Pizza;
 
 public class PizzaService(
     IWebHostEnvironment environment,
-    IPizzaRepository pizzaRepository) : IPizzaService
+    IPizzaRepository pizzaRepository,
+    IAdminService adminService,
+    IHubContext<AdminOrdersHub> hubContext) : IPizzaService
 {
     public async Task<GetAllPizzasResponse> GetAllPizzasAsync()
     {
@@ -18,8 +22,13 @@ public class PizzaService(
         return new GetAllPizzasResponse { GetAllPizzasResponses = getAllPizzasResponseList };
     }
 
-    public Task InsertPizzaOrderAsync(OrderPizzasRequest request)
-        => pizzaRepository.InsertPizzaOrderAsync(request);
+    public async Task InsertPizzaOrderAsync(OrderPizzasRequest request)
+    {
+        await pizzaRepository.InsertPizzaOrderAsync(request);
+        var ordersForToday = await adminService.GetAllOrdersAsync();
+        
+        await hubContext.Clients.All.SendAsync("ReceiveOrderFromUser", ordersForToday);
+    }
 
     public Task<GetAllOrdersResponse> GetAllOrdersByIdAsync(int userId)
         => pizzaRepository.GetAllOrdersByIdAsync(userId);

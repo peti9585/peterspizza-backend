@@ -20,6 +20,10 @@ internal static class Constants
     internal const string InsertPizzaOrderSp = "[dbo].[InsertPizzaOrder]";
     internal const string GetAllPizzaOrdersByIdSp = "[dbo].[GetAllPizzaOrdersById]";
     
+    internal const string GetAdminSp = "[dbo].[GetAdmin]";
+    internal const string GetAllOrdersForTodaySp = "[dbo].[GetAllOrdersForToday]";
+    internal const string ChangeOrderStateSp = "[dbo].[ChangeOrderState]";
+    
     // User-Defined Tables
     internal const string InsertOrderUdt = "[dbo].[udt_InsertOrder]";
 }

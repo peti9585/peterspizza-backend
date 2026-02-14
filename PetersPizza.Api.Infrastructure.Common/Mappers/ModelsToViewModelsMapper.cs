@@ -1,6 +1,9 @@
 using PetersPizza.Api.Infrastructure.Interfaces.Mappers;
+using PetersPizza.Api.ViewModels.Admin;
+using PetersPizza.Api.ViewModels.Common;
 using PetersPizza.Api.ViewModels.Pizza;
 using PetersPizza.Api.ViewModels.User;
+using GetAllOrderResponse = PetersPizza.Api.ViewModels.Admin.GetAllOrderResponse;
 
 namespace PetersPizza.Api.Infrastructure.Common.Mappers;
 
@@ -42,10 +45,29 @@ public partial class Mapper : IMapper
             Email = source.Email
         };
 
-    public GetAllOrdersResponse Map(Models.Pizza.GetAllOrdersResponse response)
+    public ViewModels.Pizza.GetAllOrdersResponse Map(Models.Pizza.GetAllOrdersResponse response)
         => new()
         {
             GetAllOrderResponses = MapEnumerable(response.GetAllOrderResponses, Map)
+        };
+
+    public LoginAdminResponse Map(Models.Admin.LoginAdminResponse response)
+        => new()
+        {
+            Name = response.Name,
+            JwtToken = response.JwtToken
+        };
+
+    public JwtTokenInformationResponse Map(Models.Admin.JwtTokenInformationResponse request)
+        => new()
+        {
+            IsAdmin = request.IsAdmin
+        };
+
+    public ViewModels.Admin.GetAllOrdersResponse Map(Models.Admin.GetAllOrdersResponse source)
+        => new()
+        {
+            GetAllOrderResponses = MapEnumerable(source.GetAllOrderResponses, Map)
         };
 
     private static GetPizzaResponse Map(Models.Pizza.GetPizzaResponse request)
@@ -65,11 +87,30 @@ public partial class Mapper : IMapper
             PizzaPrice = source.PizzaPrice
         };
 
-    private static GetAllOrderResponse Map(Models.Pizza.GetAllOrderResponse source)
+    private static ViewModels.Pizza.GetAllOrderResponse Map(Models.Pizza.GetAllOrderResponse source)
         => new()
         {
             OrderId = source.OrderId,
             OrderState = (OrderState)source.OrderState,
             OrderDate = source.OrderDate
+        };
+
+    private static GetAllOrderResponse Map(Models.Admin.GetAllOrderResponse source)
+        => new()
+        {
+            OrderId = source.OrderId,
+            UserName = source.UserName,
+            OrderState = (OrderState)source.OrderState,
+            OrderDate = source.OrderDate,
+            OrderItems = MapEnumerable(source.OrderItems, Map)
+        };
+
+    private static OrderItem Map(Models.Admin.OrderItem source)
+        => new()
+        {
+            OrderId = source.OrderId,
+            PizzaName = source.PizzaName,
+            Quantity = source.Quantity,
+            Price = source.Price
         };
 }

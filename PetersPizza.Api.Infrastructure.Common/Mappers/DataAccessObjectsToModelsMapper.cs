@@ -1,6 +1,9 @@
+using PetersPizza.Api.Infrastructure.DataTransferObjects.Admin;
 using PetersPizza.Api.Infrastructure.DataTransferObjects.Pizza;
 using PetersPizza.Api.Infrastructure.DataTransferObjects.User;
 using PetersPizza.Api.Infrastructure.Interfaces.Mappers;
+using PetersPizza.Api.Models.Admin;
+using PetersPizza.Api.Models.Common;
 using PetersPizza.Api.Models.Pizza;
 using PetersPizza.Api.Models.User;
 
@@ -38,11 +41,22 @@ public partial class Mapper : IMapper
             Email = source.Email
         };
 
-    public GetAllOrdersResponse Map(IEnumerable<DbGetAllOrders> source)
+    public Models.Pizza.GetAllOrdersResponse Map(IEnumerable<DbGetAllOrders> source)
         => new()
         {
             GetAllOrderResponses = MapEnumerable(source, Map)
         };
+
+    public LoginAdminInformation Map(DbLoginAdminInformation source)
+        => new()
+        {
+            AdminId = source.Id,
+            Name = source.Name,
+            PasswordHash = source.Password
+        };
+
+    public IEnumerable<GetAllOrdersRawResponse> Map(IEnumerable<DbGetAllOrdersForToday> source)
+        => MapEnumerable(source, Map);
 
     private static GetAllPizzaDetailResponse Map(DbPizza dbPizza)
         => new()
@@ -61,11 +75,24 @@ public partial class Mapper : IMapper
             PizzaPrice = source.Price
         };
     
-    private static GetAllOrderResponse Map(DbGetAllOrders source)
+    private static Models.Pizza.GetAllOrderResponse Map(DbGetAllOrders source)
         => new()
         {
             OrderId = source.OrderId,
             OrderState = (OrderState)source.OrderState,
+            OrderDate = source.OrderDate
+        };
+
+    private static GetAllOrdersRawResponse Map(DbGetAllOrdersForToday source)
+        => new()
+        {
+            OrderIdInteger = source.Id,
+            OrderIdGuid = source.OrderId,
+            UserName = source.UserName,
+            OrderState = (OrderState)source.OrderState,
+            PizzaName = source.PizzaName,
+            Price = source.Price,
+            Quantity = source.Count,
             OrderDate = source.OrderDate
         };
 }

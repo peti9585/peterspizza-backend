@@ -9,7 +9,8 @@ using PetersPizza.Api.Models.User;
 
 namespace PetersPizza.Api.Infrastructure.Repositories.User;
 
-public class UserRepository(IConfiguration configuration,
+public class UserRepository(
+    IConfiguration configuration,
     IMapper mapper) : IUserRepository
 {
     public async Task<int> RegisterUserAsync(RegisterUserRequest request)

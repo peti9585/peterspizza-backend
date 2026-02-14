@@ -1,9 +1,10 @@
-namespace PetersPizza.Api.Models.Pizza;
+namespace PetersPizza.Api.ViewModels.Common;
 
 public enum OrderState
 {
     Undefined,
     WaitingToAccept,
     Preparing,
-    ReadyToPickUp
+    ReadyToPickUp,
+    Done
 }

@@ -7,6 +7,7 @@ using PetersPizza.Api.Application.BusinessValidators;
 using PetersPizza.Api.Application.Services.Admin;
 using PetersPizza.Api.Application.Services.Pizza;
 using PetersPizza.Api.Application.Services.User;
+using PetersPizza.Api.Models.Admin;
 using PetersPizza.Api.Models.User;
 
 namespace PetersPizza.Api.Application;
@@ -23,7 +24,8 @@ public class AutofacModule : Module
         
         // Identity
         builder.RegisterType<PasswordHasher<RegisterUserRequest>>().AsSelf().SingleInstance();
-        builder.RegisterType<JwtSecurityTokenHandler>().AsSelf().SingleInstance();
+        builder.RegisterType<PasswordHasher<LoginAdminRequest>>().AsSelf().SingleInstance();
+        builder.RegisterType<JwtSecurityTokenHandler>().AsSelf().InstancePerDependency();
         
         // Business validators
         builder.RegisterType<UserAlreadyExistsValidator>().As<IValidator<(UpdateUserRequest, int)>>().SingleInstance();

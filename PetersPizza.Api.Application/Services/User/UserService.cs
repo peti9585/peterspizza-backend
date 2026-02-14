@@ -113,8 +113,8 @@ public class UserService(
         };
 
         var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-        var temp = jwtTokenHandler.WriteToken(token);
+        var responseToken = jwtTokenHandler.WriteToken(token);
         
-        return temp;
+        return responseToken;
     }
 }

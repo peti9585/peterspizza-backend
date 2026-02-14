@@ -41,7 +41,8 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddAntiforgery();
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy(Constants.User, p => p.RequireRole(Constants.User));
+    .AddPolicy(Constants.User, p => p.RequireRole(Constants.User, Constants.Admin))
+    .AddPolicy(Constants.Admin, p => p.RequireRole(Constants.Admin));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(o =>
     {
@@ -118,7 +119,10 @@ app.UseAntiforgery();
 
 app.UseMiddleware<UnhandledExceptionFilterMiddleware>();
 app.MapCarter();
-app.MapHub<OrdersHub>("/ordersHub");
+
+// SignalR
+app.MapHub<UserOrdersHub>("/ordersHub");
+app.MapHub<AdminOrdersHub>("/adminHub");
 
 app.UseAuthentication();
 app.UseAuthorization();

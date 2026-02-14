@@ -5,4 +5,7 @@ namespace PetersPizza.Api.Infrastructure.Interfaces.Repositories;
 public interface IAdminRepository
 {
     Task InsertPizzaAsync(InsertPizzaRequest request);
+    Task<LoginAdminInformation> LoginAdminAsync(LoginAdminRequest request);
+    Task<IEnumerable<GetAllOrdersRawResponse>> GetAllOrdersForTodayAsync();
+    Task<int> ChangeOrderStateAsync(ChangeOrderStateRequest request);
 }
