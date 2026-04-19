@@ -4,9 +4,9 @@ using PetersPizza.Api.Models.User;
 
 namespace PetersPizza.Api.Application.BusinessValidators;
 
-public class UserAlreadyExistsValidator : AbstractValidator<(UpdateUserRequest request, int userId)>
+public class UserUniqueValuesValidator : AbstractValidator<(UpdateUserRequest request, int userId)>
 {
-    public UserAlreadyExistsValidator(IUserRepository userRepository)
+    public UserUniqueValuesValidator(IUserRepository userRepository)
     {
         RuleFor(r => r)
             .MustAsync(async (r, _) => await userRepository.AreUserValuesUniqueAsync(r.request.PhoneNumber, r.request.Email, r.userId))

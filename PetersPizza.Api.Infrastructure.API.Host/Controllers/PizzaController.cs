@@ -77,7 +77,7 @@ public class PizzaController() : CarterModule("api/pizza")
         .WithTags(Tag)
         .RequireAuthorization("User");
 
-        app.MapGet("/orders-all/", async (
+        app.MapGet("/orders-all", async (
                 IPizzaService pizzaService,
                 IMapper mapper,
                 HttpContext context) =>

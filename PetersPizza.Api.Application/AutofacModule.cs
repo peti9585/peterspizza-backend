@@ -28,6 +28,6 @@ public class AutofacModule : Module
         builder.RegisterType<JwtSecurityTokenHandler>().AsSelf().InstancePerDependency();
         
         // Business validators
-        builder.RegisterType<UserAlreadyExistsValidator>().As<IValidator<(UpdateUserRequest, int)>>().SingleInstance();
+        builder.RegisterType<UserUniqueValuesValidator>().As<IValidator<(UpdateUserRequest, int)>>().SingleInstance();
     }
 }

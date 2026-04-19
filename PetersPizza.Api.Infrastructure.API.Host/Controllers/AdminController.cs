@@ -16,7 +16,7 @@ public class AdminController() : CarterModule("api/admin")
     
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost<LoginAdminRequest>("/login", async (
+        app.MapPost<LoginAdminRequest>("login", async (
                 [FromBody] LoginAdminRequest request,
                 IValidator<LoginAdminRequest> validator,
                 IMapper mapper,
@@ -40,7 +40,7 @@ public class AdminController() : CarterModule("api/admin")
             .WithTags(Tag);
             
         // Upload Pizza
-        app.MapPost<UploadPizzaRequest>("/upload-pizza", async (
+        app.MapPost<UploadPizzaRequest>("upload-pizza", async (
                 [FromForm] UploadPizzaRequest request,
                 IValidator<UploadPizzaRequest> validator,
                 IMapper mapper,
@@ -58,7 +58,7 @@ public class AdminController() : CarterModule("api/admin")
             .DisableAntiforgery()
             .RequireAuthorization("Admin");
         
-        app.MapPost<JwtTokenInformationRequest>("/permission", (
+        app.MapPost<JwtTokenInformationRequest>("permission", (
                 [FromBody] JwtTokenInformationRequest request,
                 IValidator<JwtTokenInformationRequest> validator,
                 IMapper mapper,
@@ -74,8 +74,7 @@ public class AdminController() : CarterModule("api/admin")
             
             return Results.Ok(responseViewModel);
         })
-        .WithTags(Tag)
-        .RequireAuthorization("Admin");
+        .WithTags(Tag);
         
         app.MapGet("orders/all", async (
                 IAdminService adminService,
