@@ -7,6 +7,7 @@ internal static class Constants
 {
     // Roles and Policies
     internal const string User = "User";
+    internal const string Admin = "Admin";
 
     internal const string DefaultCorsPolicy = "DefaultPolicy";
     

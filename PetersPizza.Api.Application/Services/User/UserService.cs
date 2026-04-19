@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -13,6 +14,7 @@ namespace PetersPizza.Api.Application.Services.User;
 public class UserService(
     IUserRepository userRepository,
     IConfiguration configuration,
+    IValidator<(UpdateUserRequest, int)> updateUserRequestValidator,
     PasswordHasher<RegisterUserRequest> passwordHasher,
     JwtSecurityTokenHandler jwtTokenHandler) : IUserService
 {
@@ -68,6 +70,13 @@ public class UserService(
     public Task<GetUserDetailsByIdResponse> GetUserByIdAsync(int userId)
         => userRepository.GetUserByIdAsync(userId);
 
+    public async Task UpdateUserAsync(UpdateUserRequest request, int userId)
+    {
+        await updateUserRequestValidator.ValidateAndThrowAsync((request, userId));
+        
+        await userRepository.UpdateUserAsync(request, userId);
+    }
+
     private async Task<Guid> UpsertRefreshTokenAsync(int userId)
     {
         var refreshToken = Guid.NewGuid();
@@ -104,8 +113,8 @@ public class UserService(
         };
 
         var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-        var temp = jwtTokenHandler.WriteToken(token);
+        var responseToken = jwtTokenHandler.WriteToken(token);
         
-        return temp;
+        return responseToken;
     }
 }

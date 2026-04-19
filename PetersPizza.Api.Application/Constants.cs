@@ -7,6 +7,7 @@ internal static class Constants
 {
     // Roles
     internal const string UserRole = "User";
+    internal const string AdminRole = "Admin";
     
     // Application
     internal const string ApplicationName = "PetersPizza.Api";
