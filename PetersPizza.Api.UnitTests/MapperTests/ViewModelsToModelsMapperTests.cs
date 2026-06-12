@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using Shouldly;
 
@@ -88,7 +86,7 @@ public class ViewModelsToModelsMapperTests : MapperTestBase
     public void UploadPizzaRequest_ViewModel_To_Model_Map_Success()
     {
         // Arrange
-        var formFile = GetFormFile();
+        var formFile = TestData.GetFormFile();
         
         var viewModel = new ViewModels.Admin.UploadPizzaRequest
         {
@@ -143,11 +141,5 @@ public class ViewModelsToModelsMapperTests : MapperTestBase
 
         // Assert
         actualModel.ShouldBeEquivalentTo(expectedModel);
-    }
-
-    private static FormFile GetFormFile()
-    {
-        // Using MemoryStream for easier testing
-        return new FormFile(new MemoryStream(), 0, 0, "test.jpg", "test/jpg");
     }
 }

@@ -1,5 +1,3 @@
-using System.IO;
-using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 using PetersPizza.Api.Infrastructure.API.Host.Validators;
 using PetersPizza.Api.ViewModels.Admin;
@@ -24,7 +22,7 @@ public class UploadPizzaRequestValidatorTests
             PizzaName = "Test Pizza",
             PizzaPrice = 10.5m,
             Description = "Test Description",
-            PizzaImage = GetFormFile()
+            PizzaImage = TestData.GetFormFile()
         };
 
         // Act
@@ -44,7 +42,7 @@ public class UploadPizzaRequestValidatorTests
             PizzaName = "",
             PizzaPrice = 10.5m,
             Description = "Test Description",
-            PizzaImage = GetFormFile()
+            PizzaImage = TestData.GetFormFile()
         };
 
         // Act
@@ -65,7 +63,7 @@ public class UploadPizzaRequestValidatorTests
             PizzaName = "Test Pizza",
             PizzaPrice = 0,
             Description = "Test Description",
-            PizzaImage = GetFormFile()
+            PizzaImage = TestData.GetFormFile()
         };
 
         // Act
@@ -86,7 +84,7 @@ public class UploadPizzaRequestValidatorTests
             PizzaName = "Test Pizza",
             PizzaPrice = 10.5m,
             Description = "",
-            PizzaImage = GetFormFile()
+            PizzaImage = TestData.GetFormFile()
         };
         
         // Act
@@ -117,11 +115,5 @@ public class UploadPizzaRequestValidatorTests
         result.IsValid.ShouldBe(false);
         result.Errors.Count.ShouldBe(1);
         result.Errors[0].ErrorMessage.ShouldBe("Pizza image cannot be empty.");
-    }
-
-    private static FormFile GetFormFile()
-    {
-        // Using MemoryStream for easier testing
-        return new FormFile(new MemoryStream(), 0, 0, "test.jpg", "test/jpg");
     }
 }
