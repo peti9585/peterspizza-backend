@@ -9,7 +9,8 @@ using PetersPizza.Api.Models.User;
 
 namespace PetersPizza.Api.Infrastructure.Repositories.User;
 
-public class UserRepository(IConfiguration configuration,
+public class UserRepository(
+    IConfiguration configuration,
     IMapper mapper) : IUserRepository
 {
     public async Task<int> RegisterUserAsync(RegisterUserRequest request)
@@ -82,6 +83,32 @@ public class UserRepository(IConfiguration configuration,
         return result is null ? new GetUserDetailsByIdResponse() : mapper.Map(result);
     }
 
+    public async Task<bool> AreUserValuesUniqueAsync(string phoneNumber, string email, int userId)
+    {
+        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
+        var parameters = CreateAreUserValuesUniqueParameters(phoneNumber, email, userId);
+        
+        conn.Open();
+        var result = await conn.ExecuteScalarAsync<int>(sql: Constants.AreUserValuesUniqueSp,
+            param: parameters, 
+            commandType: CommandType.StoredProcedure);
+        conn.Close();
+        
+        return result <= 0;
+    }
+
+    public async Task UpdateUserAsync(UpdateUserRequest request, int userId)
+    {
+        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
+        var parameters = CreateUpdateUserParameters(request, userId);
+        
+        conn.Open();
+        await conn.ExecuteAsync(sql: Constants.UpdateUserSp,
+            param: parameters, 
+            commandType: CommandType.StoredProcedure);
+        conn.Close();
+    }
+
     private static DynamicParameters CreateUpsertRefreshTokenParameters(int userId, Guid refreshToken)
     {
         var parameters = new DynamicParameters();
@@ -111,6 +138,30 @@ public class UserRepository(IConfiguration configuration,
         parameters.Add("Email", request.Email, DbType.String);
         parameters.Add("PhoneNumber", request.PhoneNumber, DbType.String);
         parameters.Add("PasswordHash", request.Password, DbType.String);
+
+        return parameters;
+    }
+    
+    private static DynamicParameters CreateAreUserValuesUniqueParameters(string phoneNumber, string email, int userId)
+    {
+        var parameters = new DynamicParameters();
+        
+        parameters.Add("UserId", userId, DbType.Int32);
+        parameters.Add("PhoneNumber", phoneNumber, DbType.String);
+        parameters.Add("Email", email, DbType.String);
+
+        return parameters;
+    }
+    
+    private static DynamicParameters CreateUpdateUserParameters(UpdateUserRequest request, int userId)
+    {
+        var parameters = new DynamicParameters();
+        
+        parameters.Add("UserId", userId, DbType.Int32);
+        parameters.Add("FirstName", request.FirstName, DbType.String);
+        parameters.Add("LastName", request.LastName, DbType.String);
+        parameters.Add("PhoneNumber", request.PhoneNumber, DbType.String);
+        parameters.Add("Email", request.Email, DbType.String);
 
         return parameters;
     }

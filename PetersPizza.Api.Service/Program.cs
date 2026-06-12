@@ -1,9 +1,12 @@
+using System.Security.Claims;
 using System.Text;
+using System.Threading.RateLimiting;
 using Autofac.Extensions.DependencyInjection;
 using Carter;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using PetersPizza.Api.Application.SignalR;
 using PetersPizza.Api.Infrastructure.API.Host.Middlewares;
 using PetersPizza.Api.Service;
 using PetersPizza.Api.Service.Transformers;
@@ -18,6 +21,7 @@ builder.Services.AddOpenApi(o =>
 });
 builder.Services.AddSwaggerGen();
 builder.Services.AddCarter();
+builder.Services.AddSignalR();
 
 var allowedOrigins = new[]
 {
@@ -37,7 +41,8 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddAntiforgery();
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy(Constants.User, p => p.RequireRole(Constants.User));
+    .AddPolicy(Constants.User, p => p.RequireRole(Constants.User, Constants.Admin))
+    .AddPolicy(Constants.Admin, p => p.RequireRole(Constants.Admin));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(o =>
     {
@@ -49,7 +54,43 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration[Constants.JwtKey]!)),
             ClockSkew = TimeSpan.Zero
         };
+        
+        o.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    path.StartsWithSegments("/ordersHub"))
+                {
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("RateLimitPolicy", context =>
+    {
+        var userId = context.User.Identity?.Name 
+                     ?? context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+        if (string.IsNullOrEmpty(userId)) userId = "anonymous";
+
+        return RateLimitPartition.GetTokenBucketLimiter(userId, _ =>
+            new TokenBucketRateLimiterOptions
+            {
+                TokenLimit = 5,
+                TokensPerPeriod = 5,
+                ReplenishmentPeriod = TimeSpan.FromMinutes(1),
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 0
+            });
+    });
+});
 
 var app = builder.Build();
 
@@ -79,7 +120,13 @@ app.UseAntiforgery();
 app.UseMiddleware<UnhandledExceptionFilterMiddleware>();
 app.MapCarter();
 
+// SignalR
+app.MapHub<UserOrdersHub>("/ordersHub");
+app.MapHub<AdminOrdersHub>("/adminHub");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseRateLimiter();
 
 app.Run();

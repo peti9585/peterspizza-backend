@@ -1,5 +1,6 @@
 using PetersPizza.Api.Infrastructure.Interfaces.Mappers;
 using PetersPizza.Api.Models.Admin;
+using PetersPizza.Api.Models.Common;
 using PetersPizza.Api.Models.Pizza;
 using PetersPizza.Api.Models.User;
 
@@ -46,6 +47,35 @@ public partial class Mapper : MapperBase, IMapper
             UserId = request.UserId,
             OrderId = request.OrderId,
             OrderPizzaRequests = MapEnumerable(request.OrderPizzaRequests, Map)
+        };
+
+    public UpdateUserRequest Map(ViewModels.User.UpdateUserRequest request)
+        => new()
+        {
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            PhoneNumber = request.PhoneNumber,
+            Email = request.Email
+        };
+
+    public LoginAdminRequest Map(ViewModels.Admin.LoginAdminRequest request)
+        => new()
+        {
+            UserName = request.UserName,
+            Password = request.Password
+        };
+
+    public JwtTokenInformationRequest Map(ViewModels.Admin.JwtTokenInformationRequest request)
+        => new()
+        {
+            JwtToken = request.JwtToken
+        };
+
+    public ChangeOrderStateRequest Map(ViewModels.Admin.ChangeOrderStateRequest request)
+        => new()
+        {
+            OrderId = request.OrderId,
+            NewOrderState = (OrderState)request.NewOrderState
         };
 
     private static OrderPizzaRequest Map(ViewModels.Pizza.OrderPizzaRequest request)

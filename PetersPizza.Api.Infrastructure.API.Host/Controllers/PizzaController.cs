@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Carter;
 using FluentValidation;
@@ -77,5 +76,22 @@ public class PizzaController() : CarterModule("api/pizza")
         })
         .WithTags(Tag)
         .RequireAuthorization("User");
+
+        app.MapGet("/orders-all", async (
+                IPizzaService pizzaService,
+                IMapper mapper,
+                HttpContext context) =>
+            {
+                int.TryParse(context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId);
+                
+                if (userId <= 0) return Results.BadRequest("Invalid user ID.");
+                
+                var result = await pizzaService.GetAllOrdersByIdAsync(userId);
+                var resultViewModel = mapper.Map(result);
+                
+                return Results.Ok(resultViewModel);
+            })
+            .WithTags(Tag)
+            .RequireAuthorization("User");
     }
 }

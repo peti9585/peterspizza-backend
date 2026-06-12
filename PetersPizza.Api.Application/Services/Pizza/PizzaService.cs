@@ -1,10 +1,17 @@
 using PetersPizza.Api.Application.Interfaces.Services;
+using Microsoft.AspNetCore.SignalR;
+using PetersPizza.Api.Application.SignalR;
 using PetersPizza.Api.Infrastructure.Interfaces.Repositories;
 using PetersPizza.Api.Models.Pizza;
 
 namespace PetersPizza.Api.Application.Services.Pizza;
 
-public class PizzaService(IImageHandlerService imageHandlerService, IPizzaRepository pizzaRepository) : IPizzaService
+public class PizzaService(
+    IWebHostEnvironment environment,
+    IPizzaRepository pizzaRepository,
+    IAdminService adminService,
+    IImageHandlerService imageHandlerService,
+    IHubContext<AdminOrdersHub> hubContext) : IPizzaService
 {
     public async Task<GetAllPizzasResponse> GetAllPizzasAsync()
     {
@@ -15,8 +22,16 @@ public class PizzaService(IImageHandlerService imageHandlerService, IPizzaReposi
         return new GetAllPizzasResponse { GetAllPizzasResponses = getAllPizzasResponseList };
     }
 
-    public Task InsertPizzaOrderAsync(OrderPizzasRequest request)
-        => pizzaRepository.InsertPizzaOrderAsync(request);
+    public async Task InsertPizzaOrderAsync(OrderPizzasRequest request)
+    {
+        await pizzaRepository.InsertPizzaOrderAsync(request);
+        var ordersForToday = await adminService.GetAllOrdersAsync();
+        
+        await hubContext.Clients.All.SendAsync("ReceiveOrderFromUser", ordersForToday);
+    }
+
+    public Task<GetAllOrdersResponse> GetAllOrdersByIdAsync(int userId)
+        => pizzaRepository.GetAllOrdersByIdAsync(userId);
 
     public Task<GetPizzasByIdsResponse> GetPizzasByIdsAsync(IEnumerable<int> pizzaIds)
         => pizzaRepository.GetPizzasByIdsAsync(pizzaIds);
