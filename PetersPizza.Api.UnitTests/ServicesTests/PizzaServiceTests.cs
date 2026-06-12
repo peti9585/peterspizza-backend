@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using NSubstitute;
 using NUnit.Framework;
 using PetersPizza.Api.Application.Interfaces.Services;
 using PetersPizza.Api.Application.Services.Pizza;
+using PetersPizza.Api.Application.SignalR;
 using PetersPizza.Api.Infrastructure.Interfaces.Repositories;
 using PetersPizza.Api.Models.Pizza;
 using Shouldly;
@@ -16,6 +18,8 @@ public class PizzaServiceTests
 {
     private IImageHandlerService _imageHandlerServiceMock;
     private IPizzaRepository _pizzaRepositoryMock;
+    private IAdminService _adminServiceMock;
+    private IHubContext<AdminOrdersHub> _hubContextMock;
     
     private PizzaService _target;
 
@@ -24,8 +28,10 @@ public class PizzaServiceTests
     {
         _imageHandlerServiceMock = Substitute.For<IImageHandlerService>();
         _pizzaRepositoryMock = Substitute.For<IPizzaRepository>();
+        _adminServiceMock = Substitute.For<IAdminService>();
+        _hubContextMock = Substitute.For<IHubContext<AdminOrdersHub>>();
         
-        _target = new PizzaService(_imageHandlerServiceMock, _pizzaRepositoryMock);
+        _target = new PizzaService(_pizzaRepositoryMock, _adminServiceMock, _imageHandlerServiceMock, _hubContextMock);
     }
 
     [Test]

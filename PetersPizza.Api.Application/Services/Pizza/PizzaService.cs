@@ -7,7 +7,6 @@ using PetersPizza.Api.Models.Pizza;
 namespace PetersPizza.Api.Application.Services.Pizza;
 
 public class PizzaService(
-    IWebHostEnvironment environment,
     IPizzaRepository pizzaRepository,
     IAdminService adminService,
     IImageHandlerService imageHandlerService,

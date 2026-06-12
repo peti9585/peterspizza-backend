@@ -24,6 +24,7 @@ public class AutofacModule : Module
         builder.RegisterType<PizzaService>().AsImplementedInterfaces().SingleInstance();
         builder.RegisterType<ImageHandlerService>().AsImplementedInterfaces().SingleInstance();
         builder.RegisterType<PasswordHandlerService<RegisterUserRequest>>().AsImplementedInterfaces().SingleInstance();
+        builder.RegisterType<PasswordHandlerService<LoginAdminRequest>>().AsImplementedInterfaces().SingleInstance();
         
         // Identity
         builder.RegisterType<PasswordHasher<RegisterUserRequest>>().AsSelf().SingleInstance();

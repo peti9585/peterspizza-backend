@@ -1,6 +1,7 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
+using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using NSubstitute;
@@ -20,6 +21,7 @@ public class UserServiceTests
     private IConfiguration _configurationMock;
     private IPasswordHandlerService<RegisterUserRequest> _passwordHandlerServiceMock;
     private JwtSecurityTokenHandler _jwtTokenHandlerMock;
+    private IValidator<(UpdateUserRequest, int)> _updateUserRequestValidatorMock;
     
     private UserService _target;
     
@@ -33,8 +35,9 @@ public class UserServiceTests
         _configurationMock = Substitute.For<IConfiguration>();
         _passwordHandlerServiceMock = Substitute.For<IPasswordHandlerService<RegisterUserRequest>>();
         _jwtTokenHandlerMock = Substitute.For<JwtSecurityTokenHandler>();
+        _updateUserRequestValidatorMock = Substitute.For<IValidator<(UpdateUserRequest, int)>>();
         
-        _target = new UserService(_userRepositoryMock, _configurationMock, _passwordHandlerServiceMock, _jwtTokenHandlerMock);
+        _target = new UserService(_userRepositoryMock, _configurationMock, _updateUserRequestValidatorMock, _passwordHandlerServiceMock, _jwtTokenHandlerMock);
     }
 
     [Test]

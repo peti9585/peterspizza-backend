@@ -1,9 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -12,18 +9,14 @@ using PetersPizza.Api.Application.SignalR;
 using PetersPizza.Api.Infrastructure.Interfaces.Repositories;
 using PetersPizza.Api.Models.Admin;
 using PetersPizza.Api.Models.SignalR;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Processing;
 
 namespace PetersPizza.Api.Application.Services.Admin;
 
 public class AdminService(
-    IWebHostEnvironment environment,
     IAdminRepository adminRepository,
     IConfiguration configuration,
     IImageHandlerService imageHandlerService,
-    PasswordHasher<LoginAdminRequest> passwordHasher,
+    IPasswordHandlerService<LoginAdminRequest> passwordHandlerService,
     JwtSecurityTokenHandler jwtTokenHandler,
     IHubContext<UserOrdersHub> hubContext) : IAdminService
 {
@@ -52,7 +45,7 @@ public class AdminService(
     {
         var repositoryResponse = await adminRepository.LoginAdminAsync(request);
 
-        if (!IsValidPassword(request.Password, repositoryResponse.PasswordHash)) return new LoginAdminResponse();
+        if (!passwordHandlerService.IsValidPassword(request.Password, repositoryResponse.PasswordHash)) return new LoginAdminResponse();
 
         return new LoginAdminResponse
         {
@@ -119,31 +112,6 @@ public class AdminService(
             string.Equals(c.Value, Constants.AdminRole, StringComparison.OrdinalIgnoreCase));
         
         return new JwtTokenInformationResponse { IsAdmin = isAdmin };
-    }
-
-    private static async Task CompressAndSaveAsync(IFormFile imageFile, string outputPath, int quality = 50)
-    {
-        await using var inputStream = imageFile.OpenReadStream();
-        using var image = await Image.LoadAsync(inputStream);
-
-        image.Mutate(i => i.Resize(new ResizeOptions
-        {
-            Mode = ResizeMode.Max,
-            Size = new Size(300, 300)
-        }));
-        
-        var encoder = new JpegEncoder { Quality = quality };
-
-        await image.SaveAsync(outputPath, encoder);
-    }
-    
-    private bool IsValidPassword(string providedPassword, string storedPasswordHash)
-    {
-        if (string.IsNullOrWhiteSpace(storedPasswordHash)) return false;
-        
-        var result = passwordHasher.VerifyHashedPassword(null, storedPasswordHash, providedPassword);
-        
-        return result == PasswordVerificationResult.Success;
     }
     
     private string GenerateJwtTokenForAdmin(string userName, int userId)

@@ -1,10 +1,14 @@
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using NSubstitute;
 using NUnit.Framework;
 using PetersPizza.Api.Application.Interfaces.Services;
 using PetersPizza.Api.Application.Services.Admin;
+using PetersPizza.Api.Application.SignalR;
 using PetersPizza.Api.Infrastructure.Interfaces.Repositories;
 using PetersPizza.Api.Models.Admin;
 using Shouldly;
@@ -16,6 +20,10 @@ public class AdminServiceTests
 {
     private IImageHandlerService _imageHandlerServiceMock;
     private IAdminRepository _adminRepositoryMock;
+    private IConfiguration _configurationMock;
+    private IPasswordHandlerService<LoginAdminRequest> _passwordHandlerServiceMock;
+    private JwtSecurityTokenHandler _jwtTokenHandlerMock;
+    private IHubContext<UserOrdersHub> _hubContextMock;
     
     private AdminService _target;
 
@@ -24,8 +32,12 @@ public class AdminServiceTests
     {
         _imageHandlerServiceMock = Substitute.For<IImageHandlerService>();
         _adminRepositoryMock = Substitute.For<IAdminRepository>();
+        _configurationMock = Substitute.For<IConfiguration>();
+        _passwordHandlerServiceMock = Substitute.For<IPasswordHandlerService<LoginAdminRequest>>();
+        _jwtTokenHandlerMock = Substitute.For<JwtSecurityTokenHandler>();
+        _hubContextMock = Substitute.For<IHubContext<UserOrdersHub>>();
         
-        _target = new AdminService(_imageHandlerServiceMock, _adminRepositoryMock);
+        _target = new AdminService(_adminRepositoryMock, _configurationMock, _imageHandlerServiceMock, _passwordHandlerServiceMock, _jwtTokenHandlerMock, _hubContextMock);
     }
 
     [Test]
