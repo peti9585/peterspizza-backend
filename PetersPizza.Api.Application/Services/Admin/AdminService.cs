@@ -1,11 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using PetersPizza.Api.Application.Interfaces.Services;
-using PetersPizza.Api.Application.SignalR;
+using PetersPizza.Api.Application.Interfaces.SignalR;
 using PetersPizza.Api.Infrastructure.Interfaces.Repositories;
 using PetersPizza.Api.Models.Admin;
 using PetersPizza.Api.Models.SignalR;
@@ -18,7 +17,7 @@ public class AdminService(
     IImageHandlerService imageHandlerService,
     IPasswordHandlerService<LoginAdminRequest> passwordHandlerService,
     JwtSecurityTokenHandler jwtTokenHandler,
-    IHubContext<UserOrdersHub> hubContext) : IAdminService
+    IUserOrdersHub hubContext) : IAdminService
 {
     public async Task UploadPizzaAsync(UploadPizzaRequest request)
     {
@@ -76,7 +75,7 @@ public class AdminService(
                         PizzaName = x.PizzaName,
                         Quantity = x.Quantity,
                         Price = x.Price
-                    })
+                    }).ToList()
                 };
             })
             .OrderBy(x => x.OrderState)
@@ -95,7 +94,7 @@ public class AdminService(
 
         if (userId > 0)
         {
-            await hubContext.Clients.User(userId.ToString()).SendAsync("ReceiveOrderStatus", new OrderStatusChangedNotification
+            await hubContext.SendOrderStatusUpdateToUser(userId.ToString(), new OrderStatusChangedNotification
             {
                 OrderId = request.OrderId,
                 NewOrderState = request.NewOrderState

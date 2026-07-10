@@ -1,6 +1,5 @@
 using PetersPizza.Api.Application.Interfaces.Services;
-using Microsoft.AspNetCore.SignalR;
-using PetersPizza.Api.Application.SignalR;
+using PetersPizza.Api.Application.Interfaces.SignalR;
 using PetersPizza.Api.Infrastructure.Interfaces.Repositories;
 using PetersPizza.Api.Models.Pizza;
 
@@ -10,7 +9,7 @@ public class PizzaService(
     IPizzaRepository pizzaRepository,
     IAdminService adminService,
     IImageHandlerService imageHandlerService,
-    IHubContext<AdminOrdersHub> hubContext) : IPizzaService
+    IAdminOrdersHub hubContext) : IPizzaService
 {
     public async Task<GetAllPizzasResponse> GetAllPizzasAsync()
     {
@@ -26,7 +25,7 @@ public class PizzaService(
         await pizzaRepository.InsertPizzaOrderAsync(request);
         var ordersForToday = await adminService.GetAllOrdersAsync();
         
-        await hubContext.Clients.All.SendAsync("ReceiveOrderFromUser", ordersForToday);
+        await hubContext.SendNewOrderNotificationToAdmin(ordersForToday);
     }
 
     public Task<GetAllOrdersResponse> GetAllOrdersByIdAsync(int userId)

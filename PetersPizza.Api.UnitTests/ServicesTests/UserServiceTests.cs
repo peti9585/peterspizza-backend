@@ -15,7 +15,7 @@ using Shouldly;
 namespace PetersPizza.Api.UnitTests.ServicesTests;
 
 [TestFixture]
-public class UserServiceTests
+public class UserServiceTests : ServiceTestBase
 {
     private IUserRepository _userRepositoryMock;
     private IConfiguration _configurationMock;
@@ -272,12 +272,5 @@ public class UserServiceTests
         _jwtTokenHandlerMock
             .DidNotReceive()
             .WriteToken(Arg.Any<JwtSecurityToken>());
-    }
-    
-    private static bool AssertAreEquivalent<T1, T2>(T1 actual, T2 expected) where T1 : class where T2 : class
-    {
-        actual.ShouldBeEquivalentTo(expected);
-
-        return true;
     }
 }

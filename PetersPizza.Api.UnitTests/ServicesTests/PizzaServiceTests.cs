@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR;
 using NSubstitute;
 using NUnit.Framework;
 using PetersPizza.Api.Application.Interfaces.Services;
+using PetersPizza.Api.Application.Interfaces.SignalR;
 using PetersPizza.Api.Application.Services.Pizza;
-using PetersPizza.Api.Application.SignalR;
 using PetersPizza.Api.Infrastructure.Interfaces.Repositories;
 using PetersPizza.Api.Models.Pizza;
 using Shouldly;
@@ -19,7 +18,7 @@ public class PizzaServiceTests
     private IImageHandlerService _imageHandlerServiceMock;
     private IPizzaRepository _pizzaRepositoryMock;
     private IAdminService _adminServiceMock;
-    private IHubContext<AdminOrdersHub> _hubContextMock;
+    private IAdminOrdersHub _hubContextMock;
     
     private PizzaService _target;
 
@@ -29,7 +28,7 @@ public class PizzaServiceTests
         _imageHandlerServiceMock = Substitute.For<IImageHandlerService>();
         _pizzaRepositoryMock = Substitute.For<IPizzaRepository>();
         _adminServiceMock = Substitute.For<IAdminService>();
-        _hubContextMock = Substitute.For<IHubContext<AdminOrdersHub>>();
+        _hubContextMock = Substitute.For<IAdminOrdersHub>();
         
         _target = new PizzaService(_pizzaRepositoryMock, _adminServiceMock, _imageHandlerServiceMock, _hubContextMock);
     }
@@ -53,7 +52,8 @@ public class PizzaServiceTests
             }
         };
         
-        _pizzaRepositoryMock.GetAllPizzasAsync()
+        _pizzaRepositoryMock
+            .GetAllPizzasAsync()
             .Returns(new GetAllPizzaDetailsResponse
             {
                 GetAllPizzaDetailResponses =
@@ -67,7 +67,8 @@ public class PizzaServiceTests
                     }
                 ]
             });
-        _imageHandlerServiceMock.GetImageBytesByFileName(Arg.Any<string>())
+        _imageHandlerServiceMock
+            .GetImageBytesByFileName(Arg.Any<string>())
             .Returns([1, 2, 3]);
 
         // Act
@@ -76,8 +77,12 @@ public class PizzaServiceTests
         // Assert
         actualResponse.ShouldBeEquivalentTo(expectedResponse);
         
-        await _pizzaRepositoryMock.Received(1).GetAllPizzasAsync();
-        _imageHandlerServiceMock.Received(1).GetImageBytesByFileName(pizzaImageId.ToString());
+        await _pizzaRepositoryMock
+            .Received(1)
+            .GetAllPizzasAsync();
+        _imageHandlerServiceMock
+            .Received(1)
+            .GetImageBytesByFileName(pizzaImageId.ToString());
     }
 
     [Test]
@@ -90,14 +95,51 @@ public class PizzaServiceTests
             OrderId = Guid.NewGuid(),
             OrderPizzaRequests = new List<OrderPizzaRequest> { new() { PizzaId = 1, Quantity = 1 } }
         };
-        _pizzaRepositoryMock.InsertPizzaOrderAsync(request)
+        var orders = new Models.Admin.GetAllOrdersResponse
+        {
+            GetAllOrderResponses = new List<Models.Admin.GetAllOrderResponse>
+            {
+                new()
+                {
+                    OrderId = request.OrderId,
+                    UserName = "peti8595",
+                    OrderDate = DateTime.MinValue,
+                    OrderState = Models.Common.OrderState.ReadyToPickUp,
+                    OrderItems = new List<Models.Admin.OrderItem>
+                    {
+                        new()
+                        {
+                            OrderId = 2,
+                            PizzaName = "Margherita",
+                            Quantity = 2,
+                            Price = 6.5m
+                        }
+                    }
+                }
+            }
+        };
+        
+        _pizzaRepositoryMock
+            .InsertPizzaOrderAsync(request)
             .Returns(Task.CompletedTask);
+        _adminServiceMock
+            .GetAllOrdersAsync()
+            .Returns(orders);
         
         // Act
         await _target.InsertPizzaOrderAsync(request);
         
         // Assert
-        await _pizzaRepositoryMock.Received(1).InsertPizzaOrderAsync(request);
+        await _pizzaRepositoryMock
+            .Received(1)
+            .InsertPizzaOrderAsync(request);
+        await _adminServiceMock
+            .Received(1)
+            .GetAllOrdersAsync();
+        await _hubContextMock
+            .Received(1)
+            .SendNewOrderNotificationToAdmin(orders);
+
     }
 
     [Test]
@@ -114,7 +156,8 @@ public class PizzaServiceTests
             }
         };
 
-        _pizzaRepositoryMock.GetPizzasByIdsAsync(request)
+        _pizzaRepositoryMock
+            .GetPizzasByIdsAsync(request)
             .Returns(new GetPizzasByIdsResponse
             {
                 GetPizzaResponses = new List<GetPizzaByIdResponse>
@@ -129,6 +172,8 @@ public class PizzaServiceTests
         // Assert
         actualResponse.ShouldBeEquivalentTo(expectedResponse);
         
-        await _pizzaRepositoryMock.Received(1).GetPizzasByIdsAsync(request);
+        await _pizzaRepositoryMock
+            .Received(1)
+            .GetPizzasByIdsAsync(request);
     }
 }
