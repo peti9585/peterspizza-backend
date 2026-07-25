@@ -8,6 +8,7 @@ using PetersPizza.Api.Application.Services.Admin;
 using PetersPizza.Api.Application.Services.Common;
 using PetersPizza.Api.Application.Services.Pizza;
 using PetersPizza.Api.Application.Services.User;
+using PetersPizza.Api.Application.SignalR;
 using PetersPizza.Api.Models.Admin;
 using PetersPizza.Api.Models.User;
 
@@ -30,6 +31,10 @@ public class AutofacModule : Module
         builder.RegisterType<PasswordHasher<RegisterUserRequest>>().AsSelf().SingleInstance();
         builder.RegisterType<PasswordHasher<LoginAdminRequest>>().AsSelf().SingleInstance();
         builder.RegisterType<JwtSecurityTokenHandler>().AsSelf().InstancePerDependency();
+        
+        // SignalR
+        builder.RegisterType<AdminOrdersHub>().AsImplementedInterfaces().SingleInstance();
+        builder.RegisterType<UserOrdersHub>().AsImplementedInterfaces().SingleInstance();
         
         // Business validators
         builder.RegisterType<UserUniqueValuesValidator>().As<IValidator<(UpdateUserRequest, int)>>().SingleInstance();
