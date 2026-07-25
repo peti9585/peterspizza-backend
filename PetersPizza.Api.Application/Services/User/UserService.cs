@@ -2,7 +2,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using FluentValidation;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using PetersPizza.Api.Application.Interfaces.Services;
@@ -15,12 +14,12 @@ public class UserService(
     IUserRepository userRepository,
     IConfiguration configuration,
     IValidator<(UpdateUserRequest, int)> updateUserRequestValidator,
-    PasswordHasher<RegisterUserRequest> passwordHasher,
+    IPasswordHandlerService<RegisterUserRequest> passwordHandlerService,
     JwtSecurityTokenHandler jwtTokenHandler) : IUserService
 {
     public async Task<int> RegisterUserAsync(RegisterUserRequest request)
     {
-        var hashedPassword = passwordHasher.HashPassword(request, request.Password);
+        var hashedPassword = passwordHandlerService.HashPassword(request, request.Password);
         var requestWithHashedPassword = new RegisterUserRequest
         {
             FirstName = request.FirstName,
@@ -40,7 +39,7 @@ public class UserService(
     {
         var repositoryResponse = await userRepository.LoginUserAsync(request);
 
-        if (!IsValidPassword(request.Password, repositoryResponse.PasswordHash)) return new LoginUserResponse();
+        if (!passwordHandlerService.IsValidPassword(request.Password, repositoryResponse.PasswordHash)) return new LoginUserResponse();
 
         var refreshToken = await UpsertRefreshTokenAsync(repositoryResponse.UserId);
 
@@ -83,15 +82,6 @@ public class UserService(
         await userRepository.UpsertRefreshTokenAsync(userId, refreshToken);
         
         return refreshToken;
-    }
-
-    private bool IsValidPassword(string providedPassword, string storedPasswordHash)
-    {
-        if (string.IsNullOrWhiteSpace(storedPasswordHash)) return false;
-        
-        var result = passwordHasher.VerifyHashedPassword(null, storedPasswordHash, providedPassword);
-        
-        return result == PasswordVerificationResult.Success;
     }
 
     private string GenerateJwtTokenForUser(string userName, int userId)

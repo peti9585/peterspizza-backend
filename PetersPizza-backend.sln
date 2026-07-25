@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetersPizza.Api.ViewModels"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetersPizza.Api.Infrastructure.Common", "PetersPizza.Api.Infrastructure.Common\PetersPizza.Api.Infrastructure.Common.csproj", "{65691446-7CF5-4F25-8AFD-DCEB3B198FBB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetersPizza.Api.UnitTests", "PetersPizza.Api.UnitTests\PetersPizza.Api.UnitTests.csproj", "{29E9D5C9-6F72-4D58-A68D-87E8A5785F41}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,10 @@ Global
 		{65691446-7CF5-4F25-8AFD-DCEB3B198FBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65691446-7CF5-4F25-8AFD-DCEB3B198FBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65691446-7CF5-4F25-8AFD-DCEB3B198FBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29E9D5C9-6F72-4D58-A68D-87E8A5785F41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29E9D5C9-6F72-4D58-A68D-87E8A5785F41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29E9D5C9-6F72-4D58-A68D-87E8A5785F41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29E9D5C9-6F72-4D58-A68D-87E8A5785F41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{47ADAF4F-D2A6-4AEF-A8FF-64E96A724988} = {8AC446BF-6377-4809-B343-7C7BF50F8A01}

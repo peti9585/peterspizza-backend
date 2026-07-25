@@ -1,23 +1,21 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SignalR;
 using PetersPizza.Api.Application.Interfaces.Services;
-using PetersPizza.Api.Application.SignalR;
+using PetersPizza.Api.Application.Interfaces.SignalR;
 using PetersPizza.Api.Infrastructure.Interfaces.Repositories;
 using PetersPizza.Api.Models.Pizza;
 
 namespace PetersPizza.Api.Application.Services.Pizza;
 
 public class PizzaService(
-    IWebHostEnvironment environment,
     IPizzaRepository pizzaRepository,
     IAdminService adminService,
-    IHubContext<AdminOrdersHub> hubContext) : IPizzaService
+    IImageHandlerService imageHandlerService,
+    IAdminOrdersHub hubContext) : IPizzaService
 {
     public async Task<GetAllPizzasResponse> GetAllPizzasAsync()
     {
         var getResponse = await pizzaRepository.GetAllPizzasAsync();
 
-        var getAllPizzasResponseList = GetPizzaResponse(getResponse).ToList();
+        var getAllPizzasResponseList = ConstructPizzaResponse(getResponse).ToList();
         
         return new GetAllPizzasResponse { GetAllPizzasResponses = getAllPizzasResponseList };
     }
@@ -27,7 +25,7 @@ public class PizzaService(
         await pizzaRepository.InsertPizzaOrderAsync(request);
         var ordersForToday = await adminService.GetAllOrdersAsync();
         
-        await hubContext.Clients.All.SendAsync("ReceiveOrderFromUser", ordersForToday);
+        await hubContext.SendNewOrderNotificationToAdmin(ordersForToday);
     }
 
     public Task<GetAllOrdersResponse> GetAllOrdersByIdAsync(int userId)
@@ -36,13 +34,11 @@ public class PizzaService(
     public Task<GetPizzasByIdsResponse> GetPizzasByIdsAsync(IEnumerable<int> pizzaIds)
         => pizzaRepository.GetPizzasByIdsAsync(pizzaIds);
 
-    private IEnumerable<GetPizzaResponse> GetPizzaResponse(GetAllPizzaDetailsResponse response)
+    private IEnumerable<GetPizzaResponse> ConstructPizzaResponse(GetAllPizzaDetailsResponse response)
     {
         foreach (var pizza in response.GetAllPizzaDetailResponses)
         {
-            var imagePath = Path.Combine(environment.WebRootPath, "images", pizza.PizzaImageId.ToString());
-            
-            var imageBytes = File.ReadAllBytes(imagePath);
+            var imageBytes = imageHandlerService.GetImageBytesByFileName(pizza.PizzaImageId.ToString());
             
             yield return new GetPizzaResponse
             {
