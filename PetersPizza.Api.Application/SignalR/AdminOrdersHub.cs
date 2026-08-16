@@ -6,10 +6,10 @@ using PetersPizza.Api.Models.Admin;
 namespace PetersPizza.Api.Application.SignalR;
 
 [Authorize(Roles = "Admin")]
-public class AdminOrdersHub : Hub, IAdminOrdersHub
+public class AdminOrdersHub(IHubContext<AdminOrdersHub> hubContext) : Hub, IAdminOrdersHub
 {
     public async Task SendNewOrderNotificationToAdmin(GetAllOrdersResponse orders)
     {
-        await Clients.All.SendAsync("ReceiveOrderFromUser", orders);
+        await hubContext.Clients.All.SendAsync("ReceiveOrderFromUser", orders);
     }
 }

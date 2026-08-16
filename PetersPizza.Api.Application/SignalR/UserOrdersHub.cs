@@ -6,10 +6,10 @@ using PetersPizza.Api.Models.SignalR;
 namespace PetersPizza.Api.Application.SignalR;
 
 [Authorize(Roles = "User")]
-public class UserOrdersHub : Hub, IUserOrdersHub
+public class UserOrdersHub(IHubContext<UserOrdersHub> hubContext) : Hub, IUserOrdersHub
 {
     public async Task SendOrderStatusUpdateToUser(string userId, OrderStatusChangedNotification status)
     {
-        await Clients.User(userId).SendAsync("ReceiveOrderStatus", status);
+        await hubContext.Clients.User(userId).SendAsync("ReceiveOrderStatus", status);
     }
 }
