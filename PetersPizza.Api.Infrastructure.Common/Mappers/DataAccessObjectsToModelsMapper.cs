@@ -1,6 +1,6 @@
-using PetersPizza.Api.Infrastructure.DataTransferObjects.Admin;
-using PetersPizza.Api.Infrastructure.DataTransferObjects.Pizza;
-using PetersPizza.Api.Infrastructure.DataTransferObjects.User;
+using PetersPizza.Api.Infrastructure.DataAccessObjects.Admin;
+using PetersPizza.Api.Infrastructure.DataAccessObjects.Pizza;
+using PetersPizza.Api.Infrastructure.DataAccessObjects.User;
 using PetersPizza.Api.Infrastructure.Interfaces.Mappers;
 using PetersPizza.Api.Models.Admin;
 using PetersPizza.Api.Models.Common;

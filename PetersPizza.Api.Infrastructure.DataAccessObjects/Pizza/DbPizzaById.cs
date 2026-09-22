@@ -1,4 +1,4 @@
-namespace PetersPizza.Api.Infrastructure.DataTransferObjects.Pizza;
+namespace PetersPizza.Api.Infrastructure.DataAccessObjects.Pizza;
 
 public class DbPizzaById
 {

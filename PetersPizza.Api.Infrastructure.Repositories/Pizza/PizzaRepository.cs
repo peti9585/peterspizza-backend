@@ -2,7 +2,7 @@ using System.Data;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using PetersPizza.Api.Infrastructure.DataTransferObjects.Pizza;
+using PetersPizza.Api.Infrastructure.DataAccessObjects.Pizza;
 using PetersPizza.Api.Infrastructure.Interfaces.Mappers;
 using PetersPizza.Api.Infrastructure.Interfaces.Repositories;
 using PetersPizza.Api.Models.Pizza;
