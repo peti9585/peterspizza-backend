@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using PetersPizza.Api.Infrastructure.DataTransferObjects.Pizza;
-using PetersPizza.Api.Infrastructure.DataTransferObjects.User;
+using PetersPizza.Api.Infrastructure.DataAccessObjects.Pizza;
+using PetersPizza.Api.Infrastructure.DataAccessObjects.User;
 using PetersPizza.Api.Models.Pizza;
 using PetersPizza.Api.Models.User;
 using Shouldly;

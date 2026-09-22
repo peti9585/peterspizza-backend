@@ -1,4 +1,4 @@
-namespace PetersPizza.Api.Infrastructure.DataTransferObjects.User;
+namespace PetersPizza.Api.Infrastructure.DataAccessObjects.User;
 
 public class DbLoginUserInformation
 {

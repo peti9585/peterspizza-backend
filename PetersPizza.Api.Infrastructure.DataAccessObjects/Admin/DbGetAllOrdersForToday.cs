@@ -1,4 +1,4 @@
-namespace PetersPizza.Api.Infrastructure.DataTransferObjects.Admin;
+namespace PetersPizza.Api.Infrastructure.DataAccessObjects.Admin;
 
 public class DbGetAllOrdersForToday
 {
