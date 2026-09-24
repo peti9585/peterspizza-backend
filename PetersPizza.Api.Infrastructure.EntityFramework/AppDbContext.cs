@@ -20,5 +20,16 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             entity.Property(p => p.Price).HasColumnType("decimal(18,2)");
         });
+            
+        modelBuilder.Entity<OrderState>()
+            .HasData(Enum.GetValues<Models.Common.OrderState>()
+            .Where(e => e != Models.Common.OrderState.Undefined)
+            .Select(os => new OrderState
+            {
+                Id = (int)os,
+                Name = os.ToString(),
+                CreatedAt = new DateTime(2026, 9, 24, 0, 0, 0, DateTimeKind.Utc),
+                CreatedBy = "System"
+            }));
     }
 }

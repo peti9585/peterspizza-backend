@@ -4,8 +4,7 @@ namespace PetersPizza.Api.Models.Entities;
 
 public sealed class Pizza
 {
-    [Required]
-    public required int Id { get; init; }
+    public int Id { get; init; }
     
     [Required]
     public required Guid ImageId { get; init; }

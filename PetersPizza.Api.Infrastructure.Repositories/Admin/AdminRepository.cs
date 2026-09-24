@@ -1,84 +1,81 @@
-using System.Data;
-using Dapper;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using PetersPizza.Api.Infrastructure.DataAccessObjects.Admin;
-using PetersPizza.Api.Infrastructure.Interfaces.Mappers;
+using Microsoft.EntityFrameworkCore;
+using PetersPizza.Api.Infrastructure.EntityFramework;
 using PetersPizza.Api.Infrastructure.Interfaces.Repositories;
 using PetersPizza.Api.Models.Admin;
+using PetersPizza.Api.Models.Common;
 
 namespace PetersPizza.Api.Infrastructure.Repositories.Admin;
 
-public class AdminRepository(
-    IConfiguration configuration,
-    IMapper mapper) : IAdminRepository
+public class AdminRepository(AppDbContext dbContext) : IAdminRepository
 {
     public async Task InsertPizzaAsync(InsertPizzaRequest request)
     {
-        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
-        var parameters = CreateInsertPizzaParameters(request);
-        
-        conn.Open();
-        await conn.ExecuteAsync(sql: Constants.InsertPizzaSp,
-            param: parameters, 
-            commandType: CommandType.StoredProcedure);
-        conn.Close();
+        var pizza = new Models.Entities.Pizza
+        {
+            Name = request.PizzaName,
+            Description = request.Description,
+            Price = request.PizzaPrice,
+            ImageId = request.PizzaImageId
+        };
+
+        dbContext.Pizza.Add(pizza);
+
+        await dbContext.SaveChangesAsync();
     }
 
-    public async Task<LoginAdminInformation> LoginAdminAsync(LoginAdminRequest request)
+    public async Task<LoginAdminInformation> GetAdminDetailsAsync(LoginAdminRequest request)
     {
-        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
-        var parameters = new DynamicParameters();
-        parameters.Add("@UserName", request.UserName, DbType.String);
-        
-        conn.Open();
-        var result = await conn.QuerySingleOrDefaultAsync<DbLoginAdminInformation>(sql: Constants.GetAdminSp,
-            param: parameters, 
-            commandType: CommandType.StoredProcedure);
-        conn.Close();
-        
-        return result is null ? new LoginAdminInformation() : mapper.Map(result);
+        return await dbContext.Admin
+            .Where(a => a.Name == request.UserName)
+            .Select(a => new LoginAdminInformation
+            {
+                AdminId = a.Id,
+                Name = a.Name,
+                PasswordHash = a.Password
+            })
+            .AsNoTracking()
+            .SingleOrDefaultAsync() ?? new LoginAdminInformation();
     }
 
     public async Task<IEnumerable<GetAllOrdersRawResponse>> GetAllOrdersForTodayAsync()
     {
-        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
-        
-        conn.Open();
-        var result = await conn.QueryAsync<DbGetAllOrdersForToday>(sql: Constants.GetAllOrdersForTodaySp,
-            commandType: CommandType.StoredProcedure);
-        conn.Close();
-        
-        var response = mapper.Map(result);
-        
-        return response;
+        return await dbContext.Order
+            .Join(dbContext.Pizza,
+                o => o.PizzaId,
+                p => p.Id,
+                (order, pizza) => new { order, pizza })
+            .Join(dbContext.User,
+                combined => combined.order.UserId,
+                u => u.Id,
+                (combined, user) => new { combined.order, combined.pizza, user })
+            .Where(x => x.order.OrderDate.Date == DateTime.UtcNow.Date)
+            .Select(x => new GetAllOrdersRawResponse
+            {
+                OrderIdInteger = x.order.Id,
+                OrderIdGuid = x.order.OrderId,
+                UserName = x.user.FirstName + " " + x.user.LastName,
+                PizzaName = x.pizza.Name,
+                Price = x.pizza.Price,
+                Quantity = x.order.Count,
+                OrderState = (OrderState)x.order.OrderStateId,
+                OrderDate = x.order.OrderDate
+            })
+            .AsNoTracking()
+            .ToListAsync();
     }
 
     public async Task<int> ChangeOrderStateAsync(ChangeOrderStateRequest request)
     {
-        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
-        var parameters = new DynamicParameters();
-        parameters.Add("@OrderId", request.OrderId, DbType.Guid);
-        parameters.Add("@NewOrderState", request.NewOrderState, DbType.Int32);
+        var userId = await dbContext.Order
+            .Where(o => o.OrderId == request.OrderId)
+            .AsNoTracking()
+            .Select(o => o.UserId)
+            .FirstOrDefaultAsync();
         
-        conn.Open();
-        var userId = await conn.QueryFirstOrDefaultAsync<int>(sql: Constants.ChangeOrderStateSp,
-            param: parameters, 
-            commandType: CommandType.StoredProcedure);
-        conn.Close();
+        await dbContext.Order
+            .Where(o => o.OrderId == request.OrderId)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(o => o.OrderStateId, (int)request.NewOrderState));
 
         return userId;
-    }
-
-    private static DynamicParameters CreateInsertPizzaParameters(InsertPizzaRequest request)
-    {
-        var parameters = new DynamicParameters();
-        
-        parameters.Add("@Name", request.PizzaName, DbType.String);
-        parameters.Add("@Description", request.Description, DbType.String);
-        parameters.Add("@Price", request.PizzaPrice, DbType.Decimal, precision: 18, scale: 2);
-        parameters.Add("@ImageId", request.PizzaImageId, DbType.Guid);
-        
-        return parameters;
     }
 }

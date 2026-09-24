@@ -6,7 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\PetersPizza.Api.Infrastructure.DataAccessObjects\PetersPizza.Api.Infrastructure.DataAccessObjects.csproj" />
       <ProjectReference Include="..\PetersPizza.Api.Models\PetersPizza.Api.Models.csproj" />
       <ProjectReference Include="..\PetersPizza.Api.ViewModels\PetersPizza.Api.ViewModels.csproj" />
     </ItemGroup>

@@ -105,6 +105,36 @@ namespace PetersPizza.Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OrderState");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2026, 9, 24, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            Name = "WaitingToAccept"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2026, 9, 24, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            Name = "Preparing"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2026, 9, 24, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            Name = "ReadyToPickUp"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2026, 9, 24, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedBy = "System",
+                            Name = "Done"
+                        });
                 });
 
             modelBuilder.Entity("PetersPizza.Api.Models.Entities.Pizza", b =>

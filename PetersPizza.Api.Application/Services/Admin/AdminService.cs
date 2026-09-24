@@ -42,7 +42,7 @@ public class AdminService(
 
     public async Task<LoginAdminResponse> LoginAdminAsync(LoginAdminRequest request)
     {
-        var repositoryResponse = await adminRepository.LoginAdminAsync(request);
+        var repositoryResponse = await adminRepository.GetAdminDetailsAsync(request);
 
         if (!passwordHandlerService.IsValidPassword(request.Password, repositoryResponse.PasswordHash)) return new LoginAdminResponse();
 
