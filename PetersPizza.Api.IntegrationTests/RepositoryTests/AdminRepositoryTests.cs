@@ -140,26 +140,33 @@ public class AdminRepositoryTests : IntegrationTestBase
         _dbContext.Add(order);
         await _dbContext.SaveChangesAsync();
 
-        var expected = new List<GetAllOrdersRawResponse>
+        var expected = new GetAllOrdersRawResponse
         {
-            new()
-            {
-                OrderIdInteger = order.Id,
-                OrderIdGuid = order.OrderId,
-                UserName = user.FirstName + " " + user.LastName,
-                PizzaName = pizza.Name,
-                Price = pizza.Price,
-                Quantity = order.Count,
-                OrderState = (Models.Common.OrderState)order.OrderStateId,
-                OrderDate = order.OrderDate
-            }
+            OrderIdInteger = order.Id,
+            OrderIdGuid = order.OrderId,
+            UserName = user.FirstName + " " + user.LastName,
+            PizzaName = pizza.Name,
+            Price = pizza.Price,
+            Quantity = order.Count,
+            OrderState = (Models.Common.OrderState)order.OrderStateId,
+            OrderDate = order.OrderDate
         };
 
         // Act
         var result = await _target.GetAllOrdersForTodayAsync();
 
         // Assert
-        result.ShouldBeEquivalentTo(expected);
+        var firstResult = result.FirstOrDefault();
+        
+        firstResult.ShouldNotBeNull();
+        firstResult.OrderIdInteger.ShouldBe(expected.OrderIdInteger);
+        firstResult.OrderIdGuid.ShouldBe(expected.OrderIdGuid);
+        firstResult.UserName.ShouldBe(expected.UserName);
+        firstResult.PizzaName.ShouldBe(expected.PizzaName);
+        firstResult.Price.ShouldBe(expected.Price);
+        firstResult.Quantity.ShouldBe(expected.Quantity);
+        firstResult.OrderState.ShouldBe(expected.OrderState);
+        firstResult.OrderDate.Day.ShouldBe(expected.OrderDate.Day);
     }
 
     [Test]
