@@ -1,168 +1,119 @@
-using System.Data;
-using Dapper;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using PetersPizza.Api.Infrastructure.DataAccessObjects.User;
-using PetersPizza.Api.Infrastructure.Interfaces.Mappers;
+using Microsoft.EntityFrameworkCore;
+using PetersPizza.Api.Infrastructure.EntityFramework;
 using PetersPizza.Api.Infrastructure.Interfaces.Repositories;
+using PetersPizza.Api.Models.Entities;
 using PetersPizza.Api.Models.User;
 
 namespace PetersPizza.Api.Infrastructure.Repositories.User;
 
-public class UserRepository(
-    IConfiguration configuration,
-    IMapper mapper) : IUserRepository
+public class UserRepository(AppDbContext dbContext) : IUserRepository
 {
     public async Task<int> RegisterUserAsync(RegisterUserRequest request)
     {
-        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
-        var parameters = CreateRegisterUserParameters(request);
-
-        conn.Open();
-        var userId = await conn.QuerySingleOrDefaultAsync<int>(sql: Constants.InsertUserSp, 
-            param: parameters, 
-            commandType: CommandType.StoredProcedure);
-        conn.Close();
-
-        return userId;
+        var user = new Models.Entities.User
+        {
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            UserName = request.UserName,
+            Email = request.Email,
+            PhoneNumber = request.PhoneNumber,
+            Password = request.Password
+        };
+        
+        dbContext.User.Add(user);
+        await dbContext.SaveChangesAsync();
+        
+        return user.Id;
     }
 
-    public async Task<LoginUserInformation> LoginUserAsync(LoginUserRequest request)
+    public async Task<LoginUserInformation> GetUserDetailsAsync(LoginUserRequest request)
     {
-        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
-        var parameters = CreateLoginUserParameters(request);
-        
-        conn.Open();
-        var result = await conn.QuerySingleOrDefaultAsync<DbLoginUserInformation>(sql: Constants.GetUserSp, 
-            param: parameters, 
-            commandType: CommandType.StoredProcedure);
-        conn.Close();
-        
-        return result is null ? new LoginUserInformation() : mapper.Map(result);
+        return await dbContext.User
+            .Where(u => u.UserName == request.UserName)
+            .Select(u => new LoginUserInformation
+            {
+                UserId = u.Id,
+                Name = u.UserName,
+                PasswordHash = u.Password
+            })
+            .AsNoTracking()
+            .SingleOrDefaultAsync() ?? new LoginUserInformation();
     }
 
     public async Task UpsertRefreshTokenAsync(int userId, Guid refreshToken)
     {
-        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
-        var parameters = CreateUpsertRefreshTokenParameters(userId, refreshToken);
+        var newExpiryDate = DateTime.UtcNow.AddDays(1);
         
-        conn.Open();
-        await conn.ExecuteAsync(sql: Constants.UpsertRefreshTokenSp,
-            param: parameters, 
-            commandType: CommandType.StoredProcedure);
-        conn.Close();
+        var existingToken = await dbContext.UserRefreshToken
+            .SingleOrDefaultAsync(x => x.UserId == userId);
+        
+        if (existingToken != null)
+        {
+            await dbContext.UserRefreshToken
+                .Where(u => u.UserId == userId)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(t => t.RefreshToken, refreshToken)
+                    .SetProperty(t => t.ExpirationDate, newExpiryDate));
+        }
+        else
+        {
+            dbContext.UserRefreshToken.Add(new UserRefreshToken
+            {
+                UserId = userId,
+                RefreshToken = refreshToken,
+                ExpirationDate = newExpiryDate
+            });
+            
+            await dbContext.SaveChangesAsync();
+        }
     }
 
     public async Task<UserInfo> GetUserByRefreshTokenAsync(Guid refreshToken)
     {
-        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
-        var parameters = new DynamicParameters();
-        parameters.Add("@RefreshToken", refreshToken, DbType.Guid);
-        
-        conn.Open();
-        var result = await conn.QuerySingleOrDefaultAsync<DbUserInfo>(sql: Constants.GetUserByRefreshTokenSp,
-            param: parameters, 
-            commandType: CommandType.StoredProcedure);
-        conn.Close();
-        
-        return result is null ? new UserInfo() : mapper.Map(result);
+        return await dbContext.UserRefreshToken
+            .Where(t => t.RefreshToken == refreshToken && t.ExpirationDate > DateTime.UtcNow)
+            .Join(dbContext.User,
+                token => token.UserId,
+                user => user.Id,
+                (token, user) => new UserInfo
+                {
+                    Id = user.Id,
+                    UserName = user.UserName
+                })
+            .AsNoTracking()
+            .SingleOrDefaultAsync() ?? new UserInfo();
     }
 
     public async Task<GetUserDetailsByIdResponse> GetUserByIdAsync(int userId)
     {
-        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
-        var parameters = new DynamicParameters();
-        parameters.Add("@UserId", userId, DbType.Int32);
-        
-        conn.Open();
-        var result = await conn.QuerySingleOrDefaultAsync<DbGetUserDetailsByIdResponse>(sql: Constants.GetUserDetailsByIdSp,
-            param: parameters, 
-            commandType: CommandType.StoredProcedure);
-        conn.Close();
-        
-        return result is null ? new GetUserDetailsByIdResponse() : mapper.Map(result);
+        return await dbContext.User
+            .Where(u => u.Id == userId)
+            .Select(u => new GetUserDetailsByIdResponse
+            {
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                PhoneNumber = u.PhoneNumber,
+                Email = u.Email
+            })
+            .AsNoTracking()
+            .SingleOrDefaultAsync() ?? new GetUserDetailsByIdResponse();
     }
 
     public async Task<bool> AreUserValuesUniqueAsync(string phoneNumber, string email, int userId)
     {
-        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
-        var parameters = CreateAreUserValuesUniqueParameters(phoneNumber, email, userId);
-        
-        conn.Open();
-        var result = await conn.ExecuteScalarAsync<int>(sql: Constants.AreUserValuesUniqueSp,
-            param: parameters, 
-            commandType: CommandType.StoredProcedure);
-        conn.Close();
-        
-        return result <= 0;
+        return !await dbContext.User
+            .AsNoTracking()
+            .AnyAsync(u => (u.PhoneNumber.Equals(phoneNumber) || u.Email.Equals(email)) && u.Id != userId);
     }
 
     public async Task UpdateUserAsync(UpdateUserRequest request, int userId)
     {
-        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
-        var parameters = CreateUpdateUserParameters(request, userId);
-        
-        conn.Open();
-        await conn.ExecuteAsync(sql: Constants.UpdateUserSp,
-            param: parameters, 
-            commandType: CommandType.StoredProcedure);
-        conn.Close();
-    }
-
-    private static DynamicParameters CreateUpsertRefreshTokenParameters(int userId, Guid refreshToken)
-    {
-        var parameters = new DynamicParameters();
-        
-        parameters.Add("@UserId", userId, DbType.Int32);
-        parameters.Add("@RefreshToken", refreshToken, DbType.Guid);
-        
-        return parameters;
-    }
-
-    private static DynamicParameters CreateLoginUserParameters(LoginUserRequest request)
-    {
-        var parameters = new DynamicParameters();
-
-        parameters.Add("UserName", request.UserName, DbType.String);
-
-        return parameters;
-    }
-
-    private static DynamicParameters CreateRegisterUserParameters(RegisterUserRequest request)
-    {
-        var parameters = new DynamicParameters();
-
-        parameters.Add("FirstName", request.FirstName, DbType.String);
-        parameters.Add("LastName", request.LastName, DbType.String);
-        parameters.Add("UserName", request.UserName, DbType.String);
-        parameters.Add("Email", request.Email, DbType.String);
-        parameters.Add("PhoneNumber", request.PhoneNumber, DbType.String);
-        parameters.Add("PasswordHash", request.Password, DbType.String);
-
-        return parameters;
-    }
-    
-    private static DynamicParameters CreateAreUserValuesUniqueParameters(string phoneNumber, string email, int userId)
-    {
-        var parameters = new DynamicParameters();
-        
-        parameters.Add("UserId", userId, DbType.Int32);
-        parameters.Add("PhoneNumber", phoneNumber, DbType.String);
-        parameters.Add("Email", email, DbType.String);
-
-        return parameters;
-    }
-    
-    private static DynamicParameters CreateUpdateUserParameters(UpdateUserRequest request, int userId)
-    {
-        var parameters = new DynamicParameters();
-        
-        parameters.Add("UserId", userId, DbType.Int32);
-        parameters.Add("FirstName", request.FirstName, DbType.String);
-        parameters.Add("LastName", request.LastName, DbType.String);
-        parameters.Add("PhoneNumber", request.PhoneNumber, DbType.String);
-        parameters.Add("Email", request.Email, DbType.String);
-
-        return parameters;
+        await dbContext.User
+            .Where(u => u.Id == userId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(u => u.FirstName, u => request.FirstName)
+                .SetProperty(u => u.LastName, u => request.LastName)
+                .SetProperty(u => u.PhoneNumber, u => request.PhoneNumber)
+                .SetProperty(u => u.Email, u => request.Email));
     }
 }

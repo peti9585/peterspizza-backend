@@ -4,14 +4,27 @@ using System.Threading.RateLimiting;
 using Autofac.Extensions.DependencyInjection;
 using Carter;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using PetersPizza.Api.Application.SignalR;
 using PetersPizza.Api.Infrastructure.API.Host.Middlewares;
+using PetersPizza.Api.Infrastructure.EntityFramework;
 using PetersPizza.Api.Service;
 using PetersPizza.Api.Service.Transformers;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                       ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseNpgsql(
+        connectionString,
+        sql => sql.MigrationsAssembly("PetersPizza.Database"));
+});
+
 
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory(AutofacConfiguration.CreateContainer));
 
@@ -102,6 +115,11 @@ if (app.Environment.IsDevelopment())
     {
         options.SwaggerEndpoint("/openapi/v1.json", Constants.ApplicationName);
     });
+    
+    // Migrate the database on startup (development only)
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
 }
 
 app.UseStaticFiles(new StaticFileOptions

@@ -1,110 +1,77 @@
-using System.Data;
-using Dapper;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using PetersPizza.Api.Infrastructure.DataAccessObjects.Pizza;
-using PetersPizza.Api.Infrastructure.Interfaces.Mappers;
+using Microsoft.EntityFrameworkCore;
+using PetersPizza.Api.Infrastructure.EntityFramework;
 using PetersPizza.Api.Infrastructure.Interfaces.Repositories;
 using PetersPizza.Api.Models.Pizza;
 
 namespace PetersPizza.Api.Infrastructure.Repositories.Pizza;
 
-// TODO: Align connection with some wrapper class
-public class PizzaRepository(
-    IConfiguration configuration,
-    IMapper mapper) : IPizzaRepository
+public class PizzaRepository(AppDbContext dbContext) : IPizzaRepository
 {
     public async Task<GetAllPizzaDetailsResponse> GetAllPizzasAsync()
     {
-        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
-        
-        conn.Open();
-        var result = await conn.QueryAsync<DbPizza>(sql: Constants.GetAllPizzasSp,
-            commandType: CommandType.StoredProcedure);
-        conn.Close();
+        var pizzas = await dbContext.Pizza
+            .Select(p => new GetAllPizzaDetailResponse
+            {
+                PizzaId = p.Id,
+                PizzaName = p.Name,
+                Description = p.Description,
+                PizzaImageId = p.ImageId
+            })
+            .AsNoTracking()
+            .ToListAsync();
 
-        var model = mapper.Map(result);
-
-        return model;
+        return new GetAllPizzaDetailsResponse { GetAllPizzaDetailResponses = pizzas };
     }
 
     public async Task<GetPizzasByIdsResponse> GetPizzasByIdsAsync(IEnumerable<int> pizzaIds)
     {
-        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
-        var parameters = CreateIntIdsUdt(pizzaIds);
-        
-        conn.Open();
-        var result = await conn.QueryAsync<DbPizzaById>(sql: Constants.GetPizzasByIdsSp,
-            param: parameters,
-            commandType: CommandType.StoredProcedure);
-        conn.Close();
+        var pizzas = await dbContext.Pizza
+            .Where(p => pizzaIds.Contains(p.Id))
+            .Select(p => new GetPizzaByIdResponse
+            {
+                PizzaId = p.Id,
+                PizzaName = p.Name,
+                PizzaPrice = p.Price
+            })
+            .AsNoTracking()
+            .ToListAsync();
 
-        var model = mapper.Map(result);
-
-        return model;
+        return new GetPizzasByIdsResponse { GetPizzaResponses = pizzas };
     }
     
     public async Task InsertPizzaOrderAsync(OrderPizzasRequest request)
     {
-        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
-        var parameters = CreateInsertOrderUdt(request);
+        var orderEntities = request.OrderPizzaRequests.Select(p => new Models.Entities.Order
+        {
+            UserId = request.UserId,
+            OrderId = request.OrderId,
+            PizzaId = p.PizzaId,
+            Count = p.Quantity,
+            OrderStateId = (int)Models.Common.OrderState.WaitingToAccept,
+            OrderDate = DateTime.UtcNow
+        }).ToList();
         
-        conn.Open();
-        await conn.ExecuteAsync(sql: Constants.InsertPizzaOrderSp,
-            param: parameters,
-            commandType: CommandType.StoredProcedure);
-        conn.Close();
+        dbContext.Order.AddRange(orderEntities);
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task<GetAllOrdersResponse> GetAllOrdersByIdAsync(int userId)
     {
-        await using var conn = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
-        var parameters = new DynamicParameters();
-        parameters.Add("@UserId", userId, DbType.Int32);
+        var orders = await dbContext.Order
+            .Where(x => x.UserId == userId)
+            .Select(x => new GetAllOrderResponse
+            {
+                OrderId = x.OrderId,
+                OrderState = (Models.Common.OrderState)x.OrderStateId,
+                OrderDate = x.OrderDate
+            })
+            .AsNoTracking()
+            .ToListAsync();
         
-        conn.Open();
-        var result = await conn.QueryAsync<DbGetAllOrders>(sql: Constants.GetAllPizzaOrdersByIdSp,
-            param: parameters,
-            commandType: CommandType.StoredProcedure);
-        conn.Close();
-
-        var modelResponse = mapper.Map(result);
+        var distinctOrders = orders.GroupBy(o => o.OrderId)
+            .Select(g => g.First())
+            .ToList();
         
-        return modelResponse;
-    }
-
-    private static DynamicParameters CreateIntIdsUdt(IEnumerable<int> ids)
-    {
-        var parameters = new DynamicParameters();
-        var table = new DataTable();
-        table.Columns.Add("Id", typeof(int));
-
-        foreach (var id in ids)
-        {
-            table.Rows.Add(id);
-        }
-        
-        parameters.Add("@Ids", table.AsTableValuedParameter());
-        
-        return parameters;
-    }
-    
-    private static DynamicParameters CreateInsertOrderUdt(OrderPizzasRequest request)
-    {
-        var parameters = new DynamicParameters();
-        var table = new DataTable();
-        table.Columns.Add("PizzaId", typeof(int));
-        table.Columns.Add("PizzaCount", typeof(int));
-
-        foreach (var pizzas in request.OrderPizzaRequests)
-        {
-            table.Rows.Add(pizzas.PizzaId, pizzas.Quantity);
-        }
-        
-        parameters.Add("@UserId", request.UserId);
-        parameters.Add("@OrderId", request.OrderId);
-        parameters.Add("@PizzaDetails", table.AsTableValuedParameter(Constants.InsertOrderUdt));
-        
-        return parameters;
+        return new GetAllOrdersResponse { GetAllOrderResponses = distinctOrders };
     }
 }

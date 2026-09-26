@@ -113,7 +113,7 @@ public class AdminServiceTests : ServiceTestBase
         };
 
         _adminRepositoryMock
-            .LoginAdminAsync(Arg.Any<LoginAdminRequest>())
+            .GetAdminDetailsAsync(Arg.Any<LoginAdminRequest>())
             .Returns(new LoginAdminInformation
             {
                 AdminId = 2,
@@ -144,7 +144,7 @@ public class AdminServiceTests : ServiceTestBase
         
         await _adminRepositoryMock
             .Received(1)
-            .LoginAdminAsync(Arg.Is<LoginAdminRequest>(r => AssertAreEquivalent(r, request)));
+            .GetAdminDetailsAsync(Arg.Is<LoginAdminRequest>(r => AssertAreEquivalent(r, request)));
         
         _passwordHandlerServiceMock
             .Received(1)
@@ -170,7 +170,7 @@ public class AdminServiceTests : ServiceTestBase
         var expectedResponse = new LoginAdminResponse();
 
         _adminRepositoryMock
-            .LoginAdminAsync(Arg.Any<LoginAdminRequest>())
+            .GetAdminDetailsAsync(Arg.Any<LoginAdminRequest>())
             .Returns(new LoginAdminInformation
             {
                 AdminId = 2,
@@ -190,7 +190,7 @@ public class AdminServiceTests : ServiceTestBase
         
         await _adminRepositoryMock
             .Received(1)
-            .LoginAdminAsync(Arg.Is<LoginAdminRequest>(r => AssertAreEquivalent(r, request)));
+            .GetAdminDetailsAsync(Arg.Is<LoginAdminRequest>(r => AssertAreEquivalent(r, request)));
         
         _passwordHandlerServiceMock
             .Received(1)

@@ -37,7 +37,7 @@ public class UserService(
 
     public async Task<LoginUserResponse> LoginUserAsync(LoginUserRequest request)
     {
-        var repositoryResponse = await userRepository.LoginUserAsync(request);
+        var repositoryResponse = await userRepository.GetUserDetailsAsync(request);
 
         if (!passwordHandlerService.IsValidPassword(request.Password, repositoryResponse.PasswordHash)) return new LoginUserResponse();
 

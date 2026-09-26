@@ -1,6 +1,3 @@
-using PetersPizza.Api.Infrastructure.DataAccessObjects.Admin;
-using PetersPizza.Api.Infrastructure.DataAccessObjects.Pizza;
-using PetersPizza.Api.Infrastructure.DataAccessObjects.User;
 using PetersPizza.Api.Models.User;
 using PetersPizza.Api.Models.Admin;
 using PetersPizza.Api.Models.Pizza;
@@ -30,14 +27,4 @@ public interface IMapper
     ViewModels.Admin.LoginAdminResponse Map(LoginAdminResponse response);
     ViewModels.Admin.JwtTokenInformationResponse Map(JwtTokenInformationResponse response);
     ViewModels.Admin.GetAllOrdersResponse Map(Models.Admin.GetAllOrdersResponse source);
-    
-    // Data Access Objects to Models
-    LoginUserInformation Map(DbLoginUserInformation source);
-    UserInfo Map(DbUserInfo source);
-    GetAllPizzaDetailsResponse Map(IEnumerable<DbPizza> source);
-    GetPizzasByIdsResponse Map(IEnumerable<DbPizzaById> source);
-    GetUserDetailsByIdResponse Map(DbGetUserDetailsByIdResponse source);
-    Models.Pizza.GetAllOrdersResponse Map(IEnumerable<DbGetAllOrders> source);
-    LoginAdminInformation Map(DbLoginAdminInformation source);
-    IEnumerable<GetAllOrdersRawResponse> Map(IEnumerable<DbGetAllOrdersForToday> source);
 }
