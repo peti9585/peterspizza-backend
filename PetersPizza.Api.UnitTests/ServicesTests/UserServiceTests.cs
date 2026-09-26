@@ -101,7 +101,7 @@ public class UserServiceTests : ServiceTestBase
         };
         
         _userRepositoryMock
-            .LoginUserAsync(Arg.Any<LoginUserRequest>())
+            .GetUserDetailsAsync(Arg.Any<LoginUserRequest>())
             .Returns(new LoginUserInformation { Name = "Peter Kis", UserId = 10, PasswordHash = "hashed-password" });
         
         _userRepositoryMock
@@ -131,7 +131,7 @@ public class UserServiceTests : ServiceTestBase
 
         await _userRepositoryMock
             .Received(1)
-            .LoginUserAsync(Arg.Is<LoginUserRequest>(p => AssertAreEquivalent(p, request)));
+            .GetUserDetailsAsync(Arg.Is<LoginUserRequest>(p => AssertAreEquivalent(p, request)));
         
         _passwordHandlerServiceMock
             .Received(1)
@@ -161,7 +161,7 @@ public class UserServiceTests : ServiceTestBase
         var expectedResponse = new LoginUserResponse();
         
         _userRepositoryMock
-            .LoginUserAsync(Arg.Any<LoginUserRequest>())
+            .GetUserDetailsAsync(Arg.Any<LoginUserRequest>())
             .Returns(new LoginUserInformation { Name = "Peter Kis", UserId = 10, PasswordHash = "hashed-password" });
         
         _passwordHandlerServiceMock
@@ -176,7 +176,7 @@ public class UserServiceTests : ServiceTestBase
         
         await _userRepositoryMock
             .Received(1)
-            .LoginUserAsync(Arg.Is<LoginUserRequest>(p => AssertAreEquivalent(p, request)));
+            .GetUserDetailsAsync(Arg.Is<LoginUserRequest>(p => AssertAreEquivalent(p, request)));
         
         _passwordHandlerServiceMock
             .Received(1)

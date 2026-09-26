@@ -26,7 +26,7 @@ public class UserRepository(AppDbContext dbContext) : IUserRepository
         return user.Id;
     }
 
-    public async Task<LoginUserInformation> LoginUserAsync(LoginUserRequest request)
+    public async Task<LoginUserInformation> GetUserDetailsAsync(LoginUserRequest request)
     {
         return await dbContext.User
             .Where(u => u.UserName == request.UserName)
@@ -49,9 +49,11 @@ public class UserRepository(AppDbContext dbContext) : IUserRepository
         
         if (existingToken != null)
         {
-            await dbContext.UserRefreshToken.ExecuteUpdateAsync(setters => setters
-                .SetProperty(t => t.RefreshToken, t => refreshToken)
-                .SetProperty(t => t.ExpirationDate, t => newExpiryDate));
+            await dbContext.UserRefreshToken
+                .Where(u => u.UserId == userId)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(t => t.RefreshToken, refreshToken)
+                    .SetProperty(t => t.ExpirationDate, newExpiryDate));
         }
         else
         {
@@ -61,9 +63,9 @@ public class UserRepository(AppDbContext dbContext) : IUserRepository
                 RefreshToken = refreshToken,
                 ExpirationDate = newExpiryDate
             });
+            
+            await dbContext.SaveChangesAsync();
         }
-        
-        await dbContext.SaveChangesAsync();
     }
 
     public async Task<UserInfo> GetUserByRefreshTokenAsync(Guid refreshToken)
@@ -100,7 +102,8 @@ public class UserRepository(AppDbContext dbContext) : IUserRepository
     public async Task<bool> AreUserValuesUniqueAsync(string phoneNumber, string email, int userId)
     {
         return !await dbContext.User
-            .AnyAsync(u => (u.PhoneNumber == phoneNumber || u.Email == email) && u.Id != userId);
+            .AsNoTracking()
+            .AnyAsync(u => (u.PhoneNumber.Equals(phoneNumber) || u.Email.Equals(email)) && u.Id != userId);
     }
 
     public async Task UpdateUserAsync(UpdateUserRequest request, int userId)
